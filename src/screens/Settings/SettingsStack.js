@@ -10,7 +10,10 @@ function Settings() {
 
 const SettingsStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
       <Stack.Screen name="Index" component={Settings} />
     </Stack.Navigator>
   );

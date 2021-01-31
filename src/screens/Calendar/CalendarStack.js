@@ -10,7 +10,10 @@ function Calendar() {
 
 const CalendarStack = () => {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
       <Stack.Screen name="Index" component={Calendar} />
     </Stack.Navigator>
   );
