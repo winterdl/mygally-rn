@@ -1,0 +1,25 @@
+const icons = [
+  'fastfood',
+  'star',
+  'favorite',
+  'insert-emoticon',
+  'sports-esports',
+  'fitness-center',
+  'airplanemode-active',
+  'home',
+  'lightbulb',
+  'monetization-on',
+  'location-on',
+  'search',
+  'alarm',
+  'videocam',
+  'pets', 
+  'wb-sunny',
+  'celebration',
+  'local-movies',
+  'golf-course',
+  'cake', 
+  'school',
+];
+
+export {icons};

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {useState, useCallback} from 'react';
 import {View, Text, FlatList} from 'react-native';
 
 import Header from 'components/Header';
 import GroupCard from 'components/GroupCard';
-import FloatingButton from 'components/common';
+import GroupCreate from 'components/GroupCreate';
+import {FloatingButton} from 'components/common';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
@@ -18,7 +19,13 @@ const Groups = styled.View`
   flex: 1;
 `;
 
-const Home = () => {
+const Home = ({navigation}) => {
+  const [isVisible, setVisible] = useState(false);
+
+  const toggleGroupCreate = useCallback(() => {
+    setVisible((prevState) => !prevState);
+  }, [isVisible]);
+
   const groups = [
     {
       name: '다이어리 이름',
@@ -46,7 +53,13 @@ const Home = () => {
       );
     }
     return (
-      <GroupCard id={item.id} name={item.name} count={item.count} icon={true} />
+      <GroupCard
+        id={item.id}
+        name={item.name}
+        count={item.count}
+        icon={true}
+        onPress={() => navigation.navigate('Group')}
+      />
     );
   };
 
@@ -73,7 +86,8 @@ const Home = () => {
           keyExtractor={(item, index) => index}
         />
       </Groups>
-      <FloatingButton />
+      <FloatingButton onPress={() => navigation.navigate('GroupCreate')} />
+      {/* <GroupCreate isVisible={isVisible} onClose={toggleGroupCreate} /> */}
     </HomeWrapper>
   );
 };

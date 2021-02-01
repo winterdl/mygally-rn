@@ -1,12 +1,12 @@
 import React from 'react';
-import {View, Text, Dimensions} from 'react-native';
+import {View} from 'react-native';
 
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
 
-const GroupCardWrapper = styled.View`
+const GroupCardWrapper = styled.Pressable`
   padding: 16px;
   background: white;
   border-radius: 16px;
@@ -17,7 +17,7 @@ const GroupCardWrapper = styled.View`
   min-height: 150px;
   display: flex;
   justify-content: flex-end;
-  `;
+`;
 
 const Title = styled.Text`
   margin-top: 6px;
@@ -25,7 +25,7 @@ const Title = styled.Text`
   font-size: 19px;
   font-weight: 700;
   overflow: hidden;
-  padding : 0;
+  padding: 0;
 `;
 
 const Count = styled.Text`
@@ -44,7 +44,7 @@ const GroupCard = ({
   ...props
 }) => {
   return (
-    <GroupCardWrapper {...props}>
+    <GroupCardWrapper android_ripple={{color: 'lightgray'}} {...props}>
       <View>
         {icon && <Icon name="home" size={35} color={Colors.fontColor} />}
       </View>
