@@ -8,6 +8,8 @@ target 'MyGallyRN' do
 
   use_react_native!(:path => config["reactNativePath"])
 
+  pod 'react-native-sqlite-storage', :path => '../node_modules/react-native-sqlite-storage'
+
   target 'MyGallyRNTests' do
     inherit! :complete
     # Pods for testing
