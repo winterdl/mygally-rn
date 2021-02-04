@@ -1,5 +1,5 @@
 import React from 'react';
-import {View} from 'react-native';
+import {Pressable} from 'react-native';
 import {Icon} from 'react-native-elements';
 
 import {icons} from './Icons';
@@ -10,22 +10,18 @@ import Colors from 'datas/Colors';
 const IconList = styled.View`
   display: flex;
   flex-direction: row;
-  flex-wrap : wrap;
+  flex-wrap: wrap;
 `;
 const IconSelector = ({onSelect, selected}) => {
   return (
     <IconList>
       {icons.map((iconName) => (
-        <Icon
-          name={iconName}
-          type="material"
-          size={30}
-          color="lightgray"
-          onPress={onSelect}
-          containerStyle={{
+        <Pressable
+          android_ripple={{color: Colors['primary-100']}}
+          style={{
             backgroundColor: 'white',
             borderWidth: 1,
-            borderColor: 'lightgray',
+            borderColor: iconName === selected ? Colors.active : 'lightgray',
             borderStyle: 'solid',
             borderRadius: 10,
             overflow: 'hidden',
@@ -34,9 +30,16 @@ const IconSelector = ({onSelect, selected}) => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            margin : 1
+            margin: 1,
           }}
-        />
+          onPress={() => onSelect(iconName)}>
+          <Icon
+            name={iconName}
+            type="material"
+            size={30}
+            color={iconName === selected ? Colors.active : 'lightgray'}
+          />
+        </Pressable>
       ))}
     </IconList>
   );

@@ -15,8 +15,8 @@ const getAllGroups = async () =>
       let lists = [];
       for (let i = 0; i < count; i++) {
         const row = results.rows.item(i);
-        const {title, icon} = row;
-        lists.push({title, icon});
+        const {name, icon} = row;
+        lists.push({name, icon});
       }
 
       return lists;

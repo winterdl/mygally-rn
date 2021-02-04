@@ -26,7 +26,9 @@ const Divider = styled.View`
   background: ${Colors['primary-100']};
 `;
 
-const GroupScreen = ({navigation}) => {
+const GroupScreen = ({route, navigation}) => {
+  console.log(route, route.params);
+  // console.log('group Id => ', route.params.groupId); 
   return (
     <Group>
       <Header />

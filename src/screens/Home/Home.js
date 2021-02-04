@@ -1,10 +1,11 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {View, Text, FlatList} from 'react-native';
 
 import Header from 'components/Header';
 import GroupCard from 'components/GroupCard';
-import GroupCreate from 'components/GroupCreate';
 import {FloatingButton} from 'components/common';
+
+import {useGroups} from 'hooks/useGroups';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
@@ -20,11 +21,14 @@ const Groups = styled.View`
 `;
 
 const Home = ({navigation}) => {
-  const [isVisible, setVisible] = useState(false);
+  const {getGroupList, groupList} = useGroups();
 
-  const toggleGroupCreate = useCallback(() => {
-    setVisible((prevState) => !prevState);
-  }, [isVisible]);
+  useEffect(() => {
+    getGroupList();
+    console.log('>>grouplist<<', groupList);
+  }, []);
+
+  console.log('list', groupList);
 
   const groups = [
     {
@@ -48,6 +52,7 @@ const Home = ({navigation}) => {
     if (item.empty) {
       return (
         <GroupCard
+          empty={true}
           style={{color: 'transparent', backgroundColor: 'transparent'}}
         />
       );
@@ -56,9 +61,9 @@ const Home = ({navigation}) => {
       <GroupCard
         id={item.id}
         name={item.name}
-        count={item.count}
-        icon={true}
-        onPress={() => navigation.navigate('Group')}
+        count={item.count || 0}
+        icon={item.icon}
+        onPress={() => navigation.navigate('Group', {groupId: item.id})}
       />
     );
   };
@@ -80,14 +85,13 @@ const Home = ({navigation}) => {
       <Header />
       <Groups>
         <FlatList
-          data={formatData(groups, 2)}
+          data={formatData(groupList, 2)}
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={(item, index) => index}
         />
       </Groups>
       <FloatingButton onPress={() => navigation.navigate('GroupCreate')} />
-      {/* <GroupCreate isVisible={isVisible} onClose={toggleGroupCreate} /> */}
     </HomeWrapper>
   );
 };

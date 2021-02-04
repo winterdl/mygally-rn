@@ -40,16 +40,20 @@ const GroupCard = ({
   count,
   groupIcon,
   color,
+  empty = false,
   onClick,
   ...props
 }) => {
   return (
-    <GroupCardWrapper android_ripple={{color: 'lightgray'}} {...props}>
+    <GroupCardWrapper
+      android_ripple={{color: 'lightgray'}}
+      disabled={empty}
+      {...props}>
       <View>
-        {icon && <Icon name="home" size={35} color={Colors.fontColor} />}
+        {icon && <Icon name={icon} size={35} color={Colors.fontColor} />}
       </View>
       <Title numberOfLines={1}> {name} </Title>
-      <Count>{count && ' 0 items'} </Count>
+      <Count>{count && `${count} items`} </Count>
     </GroupCardWrapper>
   );
 };

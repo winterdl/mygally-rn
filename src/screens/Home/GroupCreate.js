@@ -1,9 +1,12 @@
-import React from 'react';
-import {Text, View, ScrollView} from 'react-native';
+import React, {useState} from 'react';
+import {Text, ScrollView, ToastAndroid} from 'react-native';
 import {Button, Input} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import IconSelector from 'components/IconSelector';
+import {icons} from 'components/IconSelector/Icons';
+
+import {useGroups} from 'hooks/useGroups';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
@@ -50,12 +53,25 @@ const Preview = styled.View`
 `;
 
 const Title = styled.Text`
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
-  margin-top : 5px;
+  margin-top: 10px;
 `;
 
 const GroupCreate = ({}) => {
+  const [title, setTitle] = useState('');
+  const [icon, setIcon] = useState(icons[0]);
+  const {createGroup} = useGroups();
+
+  const handleSave = () => {
+    if (!title.trim()) {
+      ToastAndroid.show('제목을 입력해 주세요.', ToastAndroid.SHORT);
+      return;
+    }
+
+    createGroup({title, icon});
+  };
+
   return (
     <GroupCreateWrapper>
       <ScrollView>
@@ -67,19 +83,20 @@ const GroupCreate = ({}) => {
                 paddingHorizontal: 0,
               }}
               inputContainerStyle={{fontSize: '16px'}}
+              onChangeText={(value) => setTitle(value)}
             />
           </GroupProperty>
 
           <GroupProperty title="Icon">
-            <IconSelector onSelect={() => {}} selected={null} />
+            <IconSelector onSelect={(icon) => setIcon(icon)} selected={icon} />
           </GroupProperty>
 
           <GroupProperty title="Preview">
-            <GroupPreview />
+            <GroupPreview groupTitle={title} selected={icon} />
           </GroupProperty>
         </Content>
 
-        <Button title="Save" />
+        <Button title="Save" onPress={handleSave} />
       </ScrollView>
     </GroupCreateWrapper>
   );
@@ -92,12 +109,12 @@ const GroupProperty = ({title, children}) => (
   </GroupPropertyWrapper>
 );
 
-const GroupPreview = ({title, selected, icons}) => {
+const GroupPreview = ({groupTitle, selected}) => {
   return (
     <GroupPreviewWrapper>
       <Preview>
-        <Icon name="home" size={35} />
-        <Title> title here</Title>
+        <Icon name={selected} size={35} />
+        <Title> {groupTitle || '제목'}</Title>
       </Preview>
     </GroupPreviewWrapper>
   );
