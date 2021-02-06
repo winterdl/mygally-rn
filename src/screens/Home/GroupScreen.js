@@ -1,8 +1,11 @@
-import React from 'react';
+import React, {useEffect} from 'react';
+import {HeaderBackButton} from '@react-navigation/stack';
 
 import Header from 'components/Header';
 import {FloatingButton} from 'components/common';
 import Post from 'components/Post';
+
+import {usePosts} from 'hooks/usePosts';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
@@ -27,11 +30,30 @@ const Divider = styled.View`
 `;
 
 const GroupScreen = ({route, navigation}) => {
-  console.log(route, route.params);
-  // console.log('group Id => ', route.params.groupId); 
+  console.log('GroupScreen', route, route.params);
+  const {postList, getPostList} = usePosts();
+  const {
+    group: {id},
+  } = route.params;
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      getPostList(id);
+    });
+    console.log('>>postlist<<',postList);
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <Group>
-      <Header />
+      <Header
+        headerLeft={
+          <HeaderBackButton
+            style={{marginLeft: 0, marginRight: 0}}
+            onPress={() => navigation.goBack()}
+          />
+        }
+      />
       <PostList>
         <Divider />
         <Post />
@@ -39,7 +61,9 @@ const GroupScreen = ({route, navigation}) => {
         <Post />
         <Post />
       </PostList>
-      <FloatingButton onPress={() => navigation.navigate('PostDetail')} />
+      <FloatingButton
+        onPress={() => navigation.navigate('PostDetail', {groupId: id})}
+      />
     </Group>
   );
 };

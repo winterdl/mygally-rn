@@ -1,11 +1,11 @@
-import React, {useState, useCallback, useEffect} from 'react';
-import {View, Text, FlatList} from 'react-native';
+import React, { useState, useCallback, useEffect } from 'react';
+import { View, Text, FlatList } from 'react-native';
 
 import Header from 'components/Header';
 import GroupCard from 'components/GroupCard';
-import {FloatingButton} from 'components/common';
+import { FloatingButton } from 'components/common';
 
-import {useGroups} from 'hooks/useGroups';
+import { useGroups } from 'hooks/useGroups';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
@@ -20,40 +20,26 @@ const Groups = styled.View`
   flex: 1;
 `;
 
-const Home = ({navigation}) => {
-  const {getGroupList, groupList} = useGroups();
+const Home = ({ navigation }) => {
+  const { getGroupList, groupList } = useGroups();
 
+  console.log('<Home /> groupList', groupList);
   useEffect(() => {
-    getGroupList();
-    console.log('>>grouplist<<', groupList);
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      console.log('>>grouplist<<', groupList);
+      getGroupList();
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   console.log('list', groupList);
 
-  const groups = [
-    {
-      name: '다이어리 이름',
-      count: '10',
-      id: 1,
-    },
-    {
-      name: '밥 일기',
-      count: '10',
-      id: 2,
-    },
-    {
-      name: 'lorem ipsum lnogong text very long!!',
-      count: '10',
-      id: 3,
-    },
-  ];
-
-  const renderItem = ({item}) => {
+  const renderItem = ({ item }) => {
     if (item.empty) {
       return (
         <GroupCard
           empty={true}
-          style={{color: 'transparent', backgroundColor: 'transparent'}}
+          style={{ color: 'transparent', backgroundColor: 'transparent' }}
         />
       );
     }
@@ -63,7 +49,7 @@ const Home = ({navigation}) => {
         name={item.name}
         count={item.count || 0}
         icon={item.icon}
-        onPress={() => navigation.navigate('Group', {groupId: item.id})}
+        onPress={() => navigation.navigate('Group', { screen: 'Index', params: { group: item } })}
       />
     );
   };
@@ -74,7 +60,7 @@ const Home = ({navigation}) => {
     const remainingElements = data.length - numberOfRows * columns;
 
     [new Array(remainingElements)].forEach((item, index) =>
-      data.push({id: `blank-${index}`, empty: true}),
+      data.push({ id: `blank-${index}`, empty: true }),
     );
 
     return data;

@@ -58,7 +58,7 @@ const Title = styled.Text`
   margin-top: 10px;
 `;
 
-const GroupCreate = ({}) => {
+const GroupCreate = ({navigation}) => {
   const [title, setTitle] = useState('');
   const [icon, setIcon] = useState(icons[0]);
   const {createGroup} = useGroups();
@@ -69,7 +69,14 @@ const GroupCreate = ({}) => {
       return;
     }
 
-    createGroup({title, icon});
+    const create = createGroup({title, icon}); 
+    if(create.error) {
+      ToastAndroid.show('일시적인 에러가 발생했습니다. 다시 시도해주세요.', ToastAndroid.SHORT); 
+      return; 
+    } 
+    
+    ToastAndroid.show('그룹을 생성했어요 :)', ToastAndroid.SHORT);
+    navigation.goBack();
   };
 
   return (
