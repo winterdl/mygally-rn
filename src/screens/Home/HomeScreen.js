@@ -15,7 +15,7 @@ const HomeWrapper = styled.View`
   height: 100%;
 `;
 
-const Groups = styled.View`
+const Groups = styled.FlatList`
   padding: 16px;
   flex: 1;
 `;
@@ -23,16 +23,13 @@ const Groups = styled.View`
 const Home = ({ navigation }) => {
   const { getGroupList, groupList } = useGroups();
 
-  console.log('<Home /> groupList', groupList);
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      console.log('>>grouplist<<', groupList);
+      console.log('>><Home /> grouplist<<', groupList);
       getGroupList();
     });
     return unsubscribe;
   }, [navigation]);
-
-  console.log('list', groupList);
 
   const renderItem = ({ item }) => {
     if (item.empty) {
@@ -69,14 +66,12 @@ const Home = ({ navigation }) => {
   return (
     <HomeWrapper>
       <Header />
-      <Groups>
-        <FlatList
+        <Groups
           data={formatData(groupList, 2)}
           renderItem={renderItem}
           numColumns={2}
           keyExtractor={(item, index) => index}
         />
-      </Groups>
       <FloatingButton onPress={() => navigation.navigate('GroupCreate')} />
     </HomeWrapper>
   );

@@ -4,7 +4,7 @@ import {View, Text, Pressable} from 'react-native';
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
 
-const PostWrapper = styled.Pressable`
+const PostWrapper = styled.View`
   display: flex;
   flex-direction: row;
 `;
@@ -37,7 +37,7 @@ const Dot = styled.View`
   position: absolute;
   width: 13px;
   height: 13px;
-  border-radius: 50;
+  border-radius: 50px;
   border-color: ${Colors['primary-100']};
   border-width: 2px;
   z-index: 2;
@@ -46,7 +46,7 @@ const Dot = styled.View`
   background-color: white;
 `;
 
-const Wrapper = styled.View`
+const Wrapper = styled.Pressable`
   padding: 0 16px 16px 16px;
   width: 80%;
   margin-bottom: 20px;
@@ -67,7 +67,7 @@ const Content = styled.Text`
   color: rgb(118, 124, 131);
 `;
 
-const Post = ({}) => {
+const Post = ({date, title, content, images, onPress}) => {
   return (
     <PostWrapper>
       <Time>
@@ -78,9 +78,9 @@ const Post = ({}) => {
         <Dot></Dot>
       </Divider>
 
-      <Wrapper>
-        <Title> post title here</Title>
-        <Content numberOfLines={1}> content here...</Content>
+      <Wrapper android_ripple={{color : 'lightgray'}} onPress={onPress}>
+        <Title numberOfLines={1}> {title} </Title>
+        <Content numberOfLines={1}> {content}</Content>
       </Wrapper>
     </PostWrapper>
   );

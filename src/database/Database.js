@@ -5,7 +5,8 @@ import {DatabaseInitialization} from './DatabaseInitialization';
 
 let databaseInstance = undefined;
 
-const getAllGroups = async () =>
+//Get all group list
+const getAllGroups = () =>
   getDatabase()
     .then((db) => db.executeSql('SELECT * from groups'))
     .then(([results]) => {
@@ -15,17 +16,17 @@ const getAllGroups = async () =>
       let lists = [];
       for (let i = 0; i < count; i++) {
         const row = results.rows.item(i);
-        const {name, icon} = row;
-        lists.push({name, icon});
+        const {id, name, icon} = row;
+        lists.push({id, name, icon});
       }
 
       return lists;
-    });
+    })
+    .catch((error) => error);
 
 //Create a new group
-const createGroup = async ({title, icon}) => {
-  console.log('==creategroup==', title, icon); 
-  return getDatabase()
+const createGroup = ({title, icon}) =>
+  getDatabase()
     .then((db) =>
       db.executeSql('INSERT INTO GROUPS (name, icon) VALUES (?, ?);', [
         title,
@@ -33,10 +34,60 @@ const createGroup = async ({title, icon}) => {
       ]),
     )
     .then(([results]) => {
-      const {rows} = results;
-      console.log('create group ', rows);
-    });
-};
+      const {insertId} = results;
+      console.log('Added group : ', insertId);
+    })
+    .catch((error) => error);
+
+//Create a new post in group
+const createPost = ({groupId, date, title, content, images}) =>
+  getDatabase()
+    .then((db) =>
+      db.executeSql(
+        'INSERT INTO posts (group_id, date, title, content, images) VALUES (?, ?, ?, ?, ?);',
+        [groupId, date, title, content, images],
+      ),
+    )
+    .then(([results]) => {
+      const {insertId} = results;
+      console.log('Added post : ', insertId);
+    })
+    .catch((error) => error);
+
+//Update post
+const updatePost = ({postId, date, title, content, images}) =>
+  getDatabase()
+    .then((db) =>
+      db.executeSql(
+        'UPDATE posts SET date = ?, title = ?, content = ? , images = ? WHERE id = ?;',
+        [date, title, content, images, postId],
+      ),
+    )
+    .then(([results]) => {
+      console.log(results);
+      const {rowsAffected} = results;
+      if (rowsAffected === 0) throw new Error('update fail');
+      console.log('Updated post : ', postId);
+    })
+    .catch((error) => error);
+
+const getAllPosts = async (groupId) =>
+  getDatabase().then((db) =>
+    db
+      .executeSql('SELECT * FROM posts WHERE group_id = ? ', [groupId])
+      .then(([results]) => {
+        if (results === undefined) return [];
+
+        const count = results.rows.length;
+        let lists = [];
+        for (let i = 0; i < count; i++) {
+          const row = results.rows.item(i);
+          lists.push(row);
+        }
+        return lists;
+      })
+      .catch((error) => error),
+  );
 
 const getDatabase = async () => {
   if (databaseInstance !== undefined) return Promise.resolve(databaseInstance);
@@ -79,4 +130,7 @@ const close = async () => {
 export const sqliteDatabase = {
   getAllGroups,
   createGroup,
+  getAllPosts,
+  createPost,
+  updatePost,
 };

@@ -1,7 +1,7 @@
 import React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
 
-import Home from './Home';
+import HomeScreen from './HomeScreen';
 import GroupCreate from './GroupCreate';
 import GroupStack from './GroupStack';
 import {horizontalAnimation} from 'utils/Animations';
@@ -13,7 +13,7 @@ const HomeStack = () => {
     <Stack.Navigator screenOptions={horizontalAnimation}>
       <Stack.Screen
         name="Index"
-        component={Home}
+        component={HomeScreen}
         options={{headerShown: false}}
       />
       <Stack.Screen name="GroupCreate" component={GroupCreate} />

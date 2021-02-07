@@ -63,18 +63,22 @@ const GroupCreate = ({navigation}) => {
   const [icon, setIcon] = useState(icons[0]);
   const {createGroup} = useGroups();
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim()) {
       ToastAndroid.show('제목을 입력해 주세요.', ToastAndroid.SHORT);
       return;
     }
 
-    const create = createGroup({title, icon}); 
-    if(create.error) {
-      ToastAndroid.show('일시적인 에러가 발생했습니다. 다시 시도해주세요.', ToastAndroid.SHORT); 
-      return; 
-    } 
-    
+    const create = await createGroup({title, icon});
+    console.log('create group', create);
+    if (create.error) {
+      ToastAndroid.show(
+        '일시적인 에러가 발생했습니다. 다시 시도해주세요.',
+        ToastAndroid.SHORT,
+    );
+      return;
+    }
+
     ToastAndroid.show('그룹을 생성했어요 :)', ToastAndroid.SHORT);
     navigation.goBack();
   };
