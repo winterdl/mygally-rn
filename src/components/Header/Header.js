@@ -1,13 +1,15 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View, Text, Pressable} from 'react-native';
 import {SearchBar} from 'react-native-elements';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import {HeaderBackButton} from '@react-navigation/stack';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
 
 const HeaderWrapper = styled.View`
   width: 100%;
-  padding: 25px;
+  padding: 20px;
   background-color: white;
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
@@ -19,20 +21,26 @@ const Title = styled.View`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 16px;
 `;
 
 const TitleText = styled.Text`
   font-size: 20px;
-  font-weight: bold;
+  font-weight: 700;
+  text-align-vertical: center;
+  margin: ${(props) => (props.showBackButton ? '20px' : '0px')};
 `;
 
-const Header = () => {
+const Header = ({headerLeft, headerRight, headerTitle}) => {
   return (
     <HeaderWrapper>
       <Title>
-        <TitleText> Home </TitleText>
-        <Text> Button Here </Text>
+        <View style={{display: 'flex', flexDirection: 'row'}}>
+          {headerLeft}
+          <TitleText> {headerTitle || 'Home'} </TitleText>
+        </View>
+        <Text> {headerRight} </Text>
       </Title>
       <SearchBar
         placeholder="Search"
