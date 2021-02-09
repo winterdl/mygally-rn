@@ -1,2 +1,3 @@
 import FloatingButton from './FloatingButton';
-export {FloatingButton};
+import BottomSheet from './BottomSheet';
+export {FloatingButton, BottomSheet};
