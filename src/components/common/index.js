@@ -1,3 +1,4 @@
 import FloatingButton from './FloatingButton';
 import BottomSheet from './BottomSheet';
-export {FloatingButton, BottomSheet};
+import Modal from './Modal';
+export {FloatingButton, BottomSheet, Modal};
