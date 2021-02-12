@@ -1,5 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import React, { useEffect } from 'react';
 
 import Header from 'components/Header';
 import GroupCard from 'components/GroupCard';

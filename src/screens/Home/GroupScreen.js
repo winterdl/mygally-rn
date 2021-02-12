@@ -32,6 +32,7 @@ const Divider = styled.View`
 
 const PostList = styled.FlatList`
   padding : 20px; 
+  margin-bottom : 20px;
 `; 
 const GroupScreen = ({route, navigation}) => {
   const {
