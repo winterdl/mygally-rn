@@ -15,8 +15,7 @@ import {BottomSheet} from 'components/common';
 
 import {dateFormat, timeFormat} from 'constants/App';
 
-import {usePosts} from 'hooks/usePosts';
-import {useAsyncStorage} from 'hooks/useAsyncStorage';
+import {usePosts, useAsyncStorage, useReferredState} from 'hooks';
 import {useModal} from 'contexts/ModalContext';
 
 import styled from 'styled-components';
@@ -94,12 +93,11 @@ const EditButton = ({onShowMenu}) => (
 
 const PostDetailScreen = ({route, navigation}) => {
   const {groupId, isEditMode = false, post = {}} = route.params;
-  console.log('<PostDetailScreen /> params ', groupId, isEditMode, post);
-
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
 
   const sheetRef = React.useRef(null);
+  const [title, titleRef, setTitleRef] = useReferredState(title);
+  const [content, contentRef, setContentRef] = useReferredState(content);
+
   const {createPost, updatePost, deletePost} = usePosts();
   const {openModal, closeModal} = useModal();
   const {setItem, getItem, removeItem} = useAsyncStorage();
@@ -122,6 +120,7 @@ const PostDetailScreen = ({route, navigation}) => {
 
   const date = isEditMode ? new moment(post.date) : new moment();
 
+  //set custom header button depending on edit mode
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () =>
@@ -149,13 +148,12 @@ const PostDetailScreen = ({route, navigation}) => {
   }, [navigation]);
 
   useEffect(() => {
-    if (!isEditMode) return;
-
-    const {title, content} = post;
-    setTitle(title);
-    setContent(content);
+    if (isEditMode) {
+      setTitleRef(post.title);
+      setContentRef(post.content);
+    }
   }, []);
-  
+
   //check for previously stored data
   useEffect(() => {
     getItem(key).then((storedItem) => {
@@ -169,41 +167,77 @@ const PostDetailScreen = ({route, navigation}) => {
           removeItem(key);
           closeModal();
         },
-        disableBackdropPress: true,
       });
     });
   }, []);
 
-  const handleChangeTitle = useCallback(
-    (value) => {
-      setTitle(value);
+  //check if there is current editing item before removing screen
+  useEffect(() => {
+    navigation.addListener('beforeRemove', handleNavigationGoBack);
 
-      getItem(key).then((storedValue) => {
-        setItem(key, {...storedValue, title: value});
-      });
-    },
-    [title],
-  );
+    return () => navigation.removeListener('beforeRemove', null);
+  }, [navigation]);
 
-  const handleChangeContent = useCallback(
-    (value) => {
-      setContent(value);
+  const handleNavigationGoBack = (e) => {
+    if (!titleRef.current && !contentRef.current) return;
 
-      getItem(key).then((storedValue) => {
-        setItem(key, {...storedValue, content: value});
-      });
-    },
-    [content],
-  );
+    const hasUnsavedChanges = checkUnsavedChanges();
+    if (!hasUnsavedChanges) return;
+
+    e.preventDefault(); //prevent leaving the screen
+
+    openModal(<Text> 작성중인 내용이 있습니다. 저장하시겠습니까? </Text>, {
+      onConfirm: () => {
+        handleSavePost();
+        closeModal();
+      },
+      onClose: () => {
+        removeItem(key);
+        closeModal();
+        navigation.dispatch(e.data.action);
+      },
+    });
+  };
+
+  /**
+   *
+   * @description compare previous value with current state
+   * @return {Boolean}
+   */
+  const checkUnsavedChanges = () => {
+    const {title: prevTitle, content: prevContent} = post;
+    let hasUnsavedChanges = false;
+
+    if (prevTitle !== titleRef.current || prevContent !== contentRef.current)
+      hasUnsavedChanges = true;
+
+    return hasUnsavedChanges;
+  };
+
+  const handleChangeTitle = (value) => {
+    setTitleRef(value);
+
+    getItem(key).then((storedValue) => {
+      setItem(key, {...storedValue, title: value});
+    });
+  };
+
+  const handleChangeContent = (value) => {
+    setContentRef(value);
+
+    getItem(key).then((storedValue) => {
+      setItem(key, {...storedValue, content: value});
+    });
+  };
 
   const handleRestorePost = (title = '', content = '') => {
-    setTitle(title);
-    setContent(content);
+    setTitleRef(title);
+    setContentRef(content);
     closeModal();
   };
 
   const handleSavePost = async () => {
-    if (!content.trim()) {
+    if (!contentRef.current.trim()) {
       ToastAndroid.show('내용을 입력해주세요', ToastAndroid.SHORT);
       return;
     }
@@ -211,15 +245,14 @@ const PostDetailScreen = ({route, navigation}) => {
     const params = {
       groupId: parseInt(groupId),
       date: new moment().toDate().toUTCString(),
-      title,
-      content,
+      title: titleRef.current,
+      content: contentRef.current,
       images: '',
     };
 
     const query = await (isEditMode
       ? updatePost({...params, postId: parseInt(post.id)})
       : createPost(params));
-    console.log('create post', post);
 
     if (query.error) {
       ToastAndroid.show(
@@ -230,6 +263,9 @@ const PostDetailScreen = ({route, navigation}) => {
     }
 
     ToastAndroid.show('글을 저장했어요 :)', ToastAndroid.SHORT);
+    removeItem(key);
+    setTitleRef(null);
+    setContentRef(null);
     navigation.goBack();
   };
 
@@ -247,6 +283,8 @@ const PostDetailScreen = ({route, navigation}) => {
 
         ToastAndroid.show('글을 삭제했어요', ToastAndroid.SHORT);
         closeModal();
+        setTitleRef(null);
+        setContentRef(null);
         navigation.goBack();
       },
       onClose: () => closeModal(),
