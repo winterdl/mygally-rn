@@ -1,7 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useDatabase} from 'contexts/DatabaseContext';
 
-export const usePosts = (groupId) => {
+const usePosts = (groupId) => {
   const [postList, setPostList] = useState([]);
   const db = useDatabase();
 
@@ -39,10 +39,24 @@ export const usePosts = (groupId) => {
       .catch((error) => ({error}));
   };
 
+  const deletePost = (postId) => {
+    console.log('usePosts hook : deletePost', postId);
+    return db
+      .deletePost(postId)
+      .then(() => {
+        getPostList();
+        return {error: null};
+      })
+      .catch((error) => ({error}));
+  };
+
   return {
     postList,
     getPostList,
     createPost,
-    updatePost
+    updatePost,
+    deletePost
   };
 };
+
+export default usePosts;

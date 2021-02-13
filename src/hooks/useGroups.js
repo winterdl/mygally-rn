@@ -1,8 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useDatabase} from 'contexts/DatabaseContext';
 
 //hook for managing CRUD for groups
-export const useGroups = () => {
+const useGroups = () => {
   const [groupList, setGroupList] = useState([]);
   const db = useDatabase();
 
@@ -35,3 +35,5 @@ export const useGroups = () => {
     createGroup,
   };
 };
+
+export default useGroups;

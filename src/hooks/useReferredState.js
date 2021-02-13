@@ -1,6 +1,6 @@
-import React, {useState, useRef} from 'react';
+import {useState, useRef} from 'react';
 
-export const useReferredState = (initValue) => {
+const useReferredState = (initValue) => {
   const [state, setState] = useState(initValue);
   const ref = useRef(state); //create a ref referring to current state
 
@@ -13,3 +13,4 @@ export const useReferredState = (initValue) => {
   return [state, ref, setReferredState];
 };
 
+export default useReferredState;

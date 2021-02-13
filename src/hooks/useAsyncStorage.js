@@ -39,4 +39,4 @@ const useAsyncStorage = () => {
   };
 };
 
-export {useAsyncStorage};
+export default useAsyncStorage;
