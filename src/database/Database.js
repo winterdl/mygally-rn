@@ -71,6 +71,17 @@ const updatePost = ({postId, date, title, content, images}) =>
     })
     .catch((error) => error);
 
+//Delete post
+const deletePost = (postId) =>
+  getDatabase()
+    .then((db) => db.executeSql('DELETE FROM posts WHERE id = ?;', [postId]))
+    .then(([results]) => {
+      const {rowsAffected} = results;
+      if (rowsAffected === 0) throw new Error('delete fail');
+      console.log('Deleted post : ', postId);
+    })
+    .catch((error) => error);
+
 const getAllPosts = async (groupId) =>
   getDatabase().then((db) =>
     db
@@ -133,4 +144,5 @@ export const sqliteDatabase = {
   getAllPosts,
   createPost,
   updatePost,
+  deletePost
 };
