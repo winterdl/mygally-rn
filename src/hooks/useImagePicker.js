@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import ImagePicker from 'react-native-image-crop-picker';
 
 const useImagePicker = (props = {}) => {
   const {width, height, cropping, multiple, onSuccess, onFail} = props;
+  const [images , setImages] = useState([]); 
   const openImagePicker = () => {
     console.log('openImagePicker');
     ImagePicker.openPicker({
@@ -10,11 +12,12 @@ const useImagePicker = (props = {}) => {
       cropping: true,
       multiple : true
     }).then((images) => {
-      console.log(images);
+      console.log(images); 
+      setImages(prevState => [...prevState, ...images]); 
     });
   };
 
-  return {openImagePicker};
+  return {openImagePicker, images, setImages};
 };
 
 export default useImagePicker;

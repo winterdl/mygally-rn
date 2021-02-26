@@ -1,21 +1,20 @@
-import React, {
-  useLayoutEffect,
-  useCallback,
-  useMemo,
-  useEffect,
-  useState,
-} from 'react';
-import {View, Text, Pressable, ToastAndroid} from 'react-native';
+import React, {useLayoutEffect, useMemo, useEffect} from 'react';
+import {View, Text, Pressable, ToastAndroid, Image} from 'react-native';
 import {Button} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import moment from 'moment';
 
-import {BottomSheet} from 'components/common';
+import {BottomSheet, Carousel} from 'components/common';
 
 import {dateFormat, timeFormat} from 'constants/App';
 
-import {usePosts, useAsyncStorage, useReferredState} from 'hooks';
+import {
+  usePosts,
+  useAsyncStorage,
+  useReferredState,
+  useImagePicker,
+} from 'hooks';
 import {useModal} from 'contexts/ModalContext';
 
 import styled from 'styled-components';
@@ -25,6 +24,8 @@ const PostDetail = styled.View`
   background-color: white;
   height: 100%;
   padding: 20px;
+  display : flex; 
+  flex-direction : column; 
 `;
 
 const Title = styled.TextInput`
@@ -36,8 +37,8 @@ const Title = styled.TextInput`
 const Content = styled.TextInput`
   font-size: 18px;
   color: ${Colors.fontColor};
-  height: 80%;
   margin-bottom: 20px;
+  flex : 1;
   text-align-vertical: top;
 `;
 
@@ -101,6 +102,7 @@ const PostDetailScreen = ({route, navigation}) => {
   const {createPost, updatePost, deletePost} = usePosts();
   const {openModal, closeModal} = useModal();
   const {setItem, getItem, removeItem} = useAsyncStorage();
+  const {images, openImagePicker} = useImagePicker();
   const key = useMemo(
     () => (post.id ? `${groupId}_${post.id}` : `${groupId}_new`),
     [],
@@ -133,7 +135,8 @@ const PostDetailScreen = ({route, navigation}) => {
         ) : (
           <Pressable
             style={{marginRight: 5, padding: 5}}
-            android_ripple={{color: 'lightgray'}}>
+            android_ripple={{color: 'lightgray'}}
+            onPress={openImagePicker}>
             <Icon name="photo-camera" size={30} />
           </Pressable>
         ),
@@ -236,7 +239,7 @@ const PostDetailScreen = ({route, navigation}) => {
     closeModal();
   };
 
-  const handleSavePost = async () => {
+  const handleSavePost = async () => { 
     if (!contentRef.current.trim()) {
       ToastAndroid.show('내용을 입력해주세요', ToastAndroid.SHORT);
       return;
@@ -292,10 +295,14 @@ const PostDetailScreen = ({route, navigation}) => {
     });
   };
 
+  console.log('images',images);
   return (
     <PostDetail>
-      <View>
-        <Text> Images .. . </Text>
+      <View >
+        <Carousel items={images}/>
+      {/* {images.map(image => (
+        <Image source={{uri : image.path}} style={{width : 300, height: 300}}/>
+      ))} */}
       </View>
 
       <Title
@@ -315,7 +322,7 @@ const PostDetailScreen = ({route, navigation}) => {
         onChangeText={handleChangeContent}
       />
 
-      <Button title="Save" onPress={handleSavePost} />
+      <Button title="저장" onPress={handleSavePost} />
       <BottomSheet ref={sheetRef} snapPoints={[0, 130]}>
         {items.map((item) => (
           <Menu android_ripple={{color: 'lightgray'}} onPress={item.onPress}>
