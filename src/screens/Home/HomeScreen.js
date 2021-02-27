@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
+import React, {useEffect} from 'react';
 
 import Header from 'components/Header';
 import GroupCard from 'components/GroupCard';
-import { FloatingButton } from 'components/common';
+import {FloatingButton} from 'components/common';
 
-import { useGroups } from 'hooks/useGroups';
+import {useGroups} from 'hooks';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
@@ -19,8 +19,8 @@ const Groups = styled.FlatList`
   flex: 1;
 `;
 
-const Home = ({ navigation }) => {
-  const { getGroupList, groupList } = useGroups();
+const Home = ({navigation}) => {
+  const {getGroupList, groupList} = useGroups();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -30,12 +30,12 @@ const Home = ({ navigation }) => {
     return unsubscribe;
   }, [navigation]);
 
-  const renderItem = ({ item }) => {
+  const renderItem = ({item}) => {
     if (item.empty) {
       return (
         <GroupCard
           empty={true}
-          style={{ color: 'transparent', backgroundColor: 'transparent' }}
+          style={{color: 'transparent', backgroundColor: 'transparent'}}
         />
       );
     }
@@ -45,7 +45,9 @@ const Home = ({ navigation }) => {
         name={item.name}
         count={item.count || 0}
         icon={item.icon}
-        onPress={() => navigation.navigate('Group', { screen: 'Index', params: { group: item } })}
+        onPress={() =>
+          navigation.navigate('Group', {screen: 'Index', params: {group: item}})
+        }
       />
     );
   };
@@ -56,7 +58,7 @@ const Home = ({ navigation }) => {
     const remainingElements = data.length - numberOfRows * columns;
 
     [new Array(remainingElements)].forEach((item, index) =>
-      data.push({ id: `blank-${index}`, empty: true }),
+      data.push({id: `blank-${index}`, empty: true}),
     );
 
     return data;
@@ -65,12 +67,12 @@ const Home = ({ navigation }) => {
   return (
     <HomeWrapper>
       <Header />
-        <Groups
-          data={formatData(groupList, 2)}
-          renderItem={renderItem}
-          numColumns={2}
-          keyExtractor={(item, index) => index}
-        />
+      <Groups
+        data={formatData(groupList, 2)}
+        renderItem={renderItem}
+        numColumns={2}
+        keyExtractor={(item, index) => index}
+      />
       <FloatingButton onPress={() => navigation.navigate('GroupCreate')} />
     </HomeWrapper>
   );

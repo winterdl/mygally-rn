@@ -6,7 +6,7 @@ import Header from 'components/Header';
 import {FloatingButton} from 'components/common';
 import Post from 'components/Post';
 
-import {usePosts} from 'hooks/usePosts';
+import {usePosts} from 'hooks';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';

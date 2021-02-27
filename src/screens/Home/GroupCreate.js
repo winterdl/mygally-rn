@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import IconSelector from 'components/IconSelector';
 import {icons} from 'components/IconSelector/Icons';
 
-import {useGroups} from 'hooks/useGroups';
+import {useGroups} from 'hooks';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
@@ -107,7 +107,7 @@ const GroupCreate = ({navigation}) => {
           </GroupProperty>
         </Content>
 
-        <Button title="Save" onPress={handleSave} />
+        <Button title="저장" onPress={handleSave} />
       </ScrollView>
     </GroupCreateWrapper>
   );
