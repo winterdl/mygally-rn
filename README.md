@@ -3,9 +3,9 @@
 
 
 ## Features 
-- create post categories with customizable cover image 
-- write posts by categories 
-- display posts in a neat timeline UI
-- upload multiple images 
-- manual backup and restore with Google Drive (TODO) 
-- multiple choice of theme selection (TODO)
+- Create post categories with customizable cover image 
+- Write posts by categories 
+- Display posts in a neat timeline UI
+- Upload multiple images 
+- Manual backup and restore with Google Drive (TODO) 
+- Multiple choice of theme selection (TODO)
