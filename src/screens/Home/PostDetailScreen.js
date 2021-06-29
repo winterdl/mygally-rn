@@ -8,7 +8,7 @@ import RNFS from 'react-native-fs';
 
 import {BottomSheet, Carousel} from 'components/common';
 
-import {dateFormat, timeFormat} from 'constants/App';
+import {DATE_FORMAT, TIME_FORMAT} from 'constants/App';
 
 import {
   usePosts,
@@ -20,6 +20,8 @@ import {useModal} from 'contexts/ModalContext';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
+
+import { APP_DIRECTORY } from 'constants/App';
 
 const PostDetail = styled.View`
   background-color: white;
@@ -148,8 +150,8 @@ const PostDetailScreen = ({route, navigation}) => {
         ),
       headerTitle: () => (
         <DateInfo>
-          <Date> {date.format(dateFormat)} </Date>
-          <Time> {date.format(timeFormat)}</Time>
+          <Date> {date.format(DATE_FORMAT)} </Date>
+          <Time> {date.format(TIME_FORMAT)}</Time>
         </DateInfo>
       ),
       headerTitleAlign: 'center',
@@ -163,10 +165,13 @@ const PostDetailScreen = ({route, navigation}) => {
 
       //set Images
       let images = [];
+      if (!post.images) return;
+
       post.images
         .split(',')
-        .forEach((name) => images.push({modificationDate: name.split('_')[0]}));
-
+        .forEach((name) =>
+          images.push({fileName: name, modificationDate: name.split('_')[0]}),
+        );
       setImages(images);
     }
   }, []);
@@ -259,27 +264,27 @@ const PostDetailScreen = ({route, navigation}) => {
       return;
     }
 
+    let index = 1;
     const params = {
       groupId: parseInt(groupId),
       date: new moment().toDate().toUTCString(),
       title: titleRef.current,
       content: contentRef.current,
       images: images
-        .map((img, i) => `${img.modificationDate}_${i + 1}`)
+        .map((img) => img.fileName || `${img.modificationDate}_${index++}`)
         .join(','),
     };
-
     const query = await (isEditMode
       ? updatePost({...params, postId: parseInt(post.id)})
       : createPost(params));
 
+    index = 1;
     for (let i = 0; i < images.length; i++) {
       const {path, modificationDate} = images[i];
       if (!path) continue;
-      
       RNFS.copyFile(
         path,
-        `${RNFS.DocumentDirectoryPath}/${modificationDate}_${i + 1}.jpg`,
+        `${APP_DIRECTORY}/${modificationDate}_${index++}.jpg`,
       ).catch((err) => {
         console.log('image file write fial', err);
       });
@@ -323,6 +328,10 @@ const PostDetailScreen = ({route, navigation}) => {
     });
   };
 
+  const handleDeleteImage = (index) => {
+    setImages(images.filter((_, i) => i !== index));
+  };
+
   return (
     <PostDetail>
       <View>
@@ -330,10 +339,9 @@ const PostDetailScreen = ({route, navigation}) => {
           items={images.map(
             (img, i) =>
               img.path ||
-              `file://${RNFS.DocumentDirectoryPath}/${img.modificationDate}_${
-                i + 1
-              }.jpg`,
+              `file://${APP_DIRECTORY}/${img.fileName}.jpg`,
           )}
+          onDelete={handleDeleteImage}
         />
       </View>
 
