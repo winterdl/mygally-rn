@@ -4,6 +4,10 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import com.rnfs.RNFSPackage;
+import com.RNFetchBlob.RNFetchBlobPackage;
+import com.reactnative.ivpusic.imagepicker.PickerPackage;
+import com.imagepicker.ImagePickerPackage;
 import org.pgsqlite.SQLitePluginPackage;
 import com.facebook.react.ReactInstanceManager;
 import com.facebook.react.ReactNativeHost;
@@ -12,6 +16,8 @@ import com.facebook.soloader.SoLoader;
 import com.facebook.react.shell.MainReactPackage;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import com.BV.LinearGradient.LinearGradientPackage;
+import com.rnfs.RNFSPackage; //react-native-fs
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -29,7 +35,8 @@ public class MainApplication extends Application implements ReactApplication {
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
           // packages.add( new SQLitePluginPackage());
-          // packages.add( new MainReactPackage());
+          packages.add(new LinearGradientPackage()); 
+          // packages.add(new PickerPackage());
           return packages;
         }
 

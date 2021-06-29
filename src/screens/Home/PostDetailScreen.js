@@ -4,6 +4,7 @@ import {Button} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import moment from 'moment';
+import RNFS from 'react-native-fs';
 
 import {BottomSheet, Carousel} from 'components/common';
 
@@ -24,8 +25,8 @@ const PostDetail = styled.View`
   background-color: white;
   height: 100%;
   padding: 20px;
-  display : flex; 
-  flex-direction : column; 
+  display: flex;
+  flex-direction: column;
 `;
 
 const Title = styled.TextInput`
@@ -38,7 +39,7 @@ const Content = styled.TextInput`
   font-size: 18px;
   color: ${Colors.fontColor};
   margin-bottom: 20px;
-  flex : 1;
+  flex: 1;
   text-align-vertical: top;
 `;
 
@@ -102,7 +103,7 @@ const PostDetailScreen = ({route, navigation}) => {
   const {createPost, updatePost, deletePost} = usePosts();
   const {openModal, closeModal} = useModal();
   const {setItem, getItem, removeItem} = useAsyncStorage();
-  const {images, openImagePicker} = useImagePicker();
+  const {images, setImages, openImagePicker} = useImagePicker();
   const key = useMemo(
     () => (post.id ? `${groupId}_${post.id}` : `${groupId}_new`),
     [],
@@ -110,6 +111,11 @@ const PostDetailScreen = ({route, navigation}) => {
 
   const items = useMemo(
     () => [
+      {
+        icon: 'photo-camera',
+        name: '사진 첨부',
+        onPress: () => openImagePicker(),
+      },
       {
         icon: 'delete-outline',
         name: '삭제하기',
@@ -154,6 +160,14 @@ const PostDetailScreen = ({route, navigation}) => {
     if (isEditMode) {
       setTitleRef(post.title);
       setContentRef(post.content);
+
+      //set Images
+      let images = [];
+      post.images
+        .split(',')
+        .forEach((name) => images.push({modificationDate: name.split('_')[0]}));
+
+      setImages(images);
     }
   }, []);
 
@@ -239,7 +253,7 @@ const PostDetailScreen = ({route, navigation}) => {
     closeModal();
   };
 
-  const handleSavePost = async () => { 
+  const handleSavePost = async () => {
     if (!contentRef.current.trim()) {
       ToastAndroid.show('내용을 입력해주세요', ToastAndroid.SHORT);
       return;
@@ -250,12 +264,26 @@ const PostDetailScreen = ({route, navigation}) => {
       date: new moment().toDate().toUTCString(),
       title: titleRef.current,
       content: contentRef.current,
-      images: '',
+      images: images
+        .map((img, i) => `${img.modificationDate}_${i + 1}`)
+        .join(','),
     };
 
     const query = await (isEditMode
       ? updatePost({...params, postId: parseInt(post.id)})
       : createPost(params));
+
+    for (let i = 0; i < images.length; i++) {
+      const {path, modificationDate} = images[i];
+      if (!path) continue;
+      
+      RNFS.copyFile(
+        path,
+        `${RNFS.DocumentDirectoryPath}/${modificationDate}_${i + 1}.jpg`,
+      ).catch((err) => {
+        console.log('image file write fial', err);
+      });
+    }
 
     if (query.error) {
       ToastAndroid.show(
@@ -295,14 +323,18 @@ const PostDetailScreen = ({route, navigation}) => {
     });
   };
 
-  console.log('images',images);
   return (
     <PostDetail>
-      <View >
-        <Carousel items={images}/>
-      {/* {images.map(image => (
-        <Image source={{uri : image.path}} style={{width : 300, height: 300}}/>
-      ))} */}
+      <View>
+        <Carousel
+          items={images.map(
+            (img, i) =>
+              img.path ||
+              `file://${RNFS.DocumentDirectoryPath}/${img.modificationDate}_${
+                i + 1
+              }.jpg`,
+          )}
+        />
       </View>
 
       <Title
@@ -323,7 +355,7 @@ const PostDetailScreen = ({route, navigation}) => {
       />
 
       <Button title="저장" onPress={handleSavePost} />
-      <BottomSheet ref={sheetRef} snapPoints={[0, 130]}>
+      <BottomSheet ref={sheetRef} snapPoints={[0, 180]}>
         {items.map((item) => (
           <Menu android_ripple={{color: 'lightgray'}} onPress={item.onPress}>
             <Icon name={item.icon} size={28} />

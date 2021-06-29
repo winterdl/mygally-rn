@@ -123,6 +123,7 @@ def enableHermes = project.ext.react.get("enableHermes", false);
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion "27.0.3"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -133,6 +134,7 @@ android {
         applicationId "com.mygallyrn"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
+        vectorDrawables.useSupportLibrary = true
         versionCode 1
         versionName "1.0"
     }
@@ -186,6 +188,8 @@ dependencies {
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation project(":react-native-sqlite-storage")
+    implementation project(":react-native-linear-gradient") 
+    implementation project(":react-native-fs")
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
 
