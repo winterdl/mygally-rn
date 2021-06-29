@@ -14,7 +14,7 @@ const Carousel = ({items}) => {
       snapToInterval={ITEM_WIDTH + 10}>
       {items.map((item) => (
         <Image
-          source={{uri: item.path}}
+          source={{uri: item}}
           style={{
             width: ITEM_WIDTH,
             height: ITEM_HEIGHT,
