@@ -20,20 +20,19 @@ const PostWrapper = styled.View`
   height: 100%;
   flex : 1;
   position: relative;
+
 `;
 
 const Divider = styled.View`
   position: absolute;
   width: 2px;
-  left: 65px;
+  left: 70px;
   height: 100%;
   background: ${Colors['primary-100']};
 `;
 
-const PostList = styled.FlatList`
-  padding : 20px; 
-  margin-bottom : 20px;
-`; 
+const PostList = styled.FlatList``;
+ 
 const GroupScreen = ({route, navigation}) => {
   const {
     group: {id, name},

@@ -1,12 +1,18 @@
 import React from 'react';
-import {View, Text, Pressable} from 'react-native';
+import {View, Image} from 'react-native';
+
+import moment from 'moment';
 
 import styled from 'styled-components';
-import Colors from 'datas/Colors';
+import Colors from 'datas/Colors'; 
 
 const PostWrapper = styled.View`
   display: flex;
   flex-direction: row;
+  padding-left : 20px; 
+  padding-right: 20px;
+  padding-top: 10px; 
+  padding-bottom : 10px;
 `;
 
 const Time = styled.View`
@@ -16,12 +22,14 @@ const Time = styled.View`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  width : 35px;
 `;
 
 const Month = styled.Text`
   font-weight: bold;
   font-size: 16px;
   color: ${Colors.fontColor};
+  text-align : center;
 `;
 
 const Day = styled.Text`
@@ -48,11 +56,13 @@ const Dot = styled.View`
 
 const Wrapper = styled.Pressable`
   padding: 0 16px 16px 16px;
-  width: 80%;
-  margin-bottom: 20px;
+  width: 77%;
   border-radius: 5px;
   padding: 10px;
-  background: white;
+  background: white; 
+  display : flex;
+  flex-direction : row;
+  justify-content : space-between;
 `;
 
 const Title = styled.Text` 
@@ -60,6 +70,7 @@ const Title = styled.Text`
   color : ${Colors.fontColor} 
   margin-bottom : 10px; 
   font-size : 16px;
+  max-width : 150;
 `;
 
 const Content = styled.Text`
@@ -68,19 +79,35 @@ const Content = styled.Text`
 `;
 
 const Post = ({date, title, content, images, onPress}) => {
+
   return (
     <PostWrapper>
       <Time>
-        <Month> Feb</Month>
-        <Day> 03</Day>
+        <Month> {moment(date).format('MMM')}</Month>
+        <Day> {moment(date).format('DD')}</Day>
       </Time>
       <Divider>
         <Dot></Dot>
       </Divider>
 
-      <Wrapper android_ripple={{color : 'lightgray'}} onPress={onPress}>
-        <Title numberOfLines={1}> {title} </Title>
-        <Content numberOfLines={1}> {content}</Content>
+      <Wrapper
+        android_ripple={{color: 'lightgray'}}
+        elevation={5}
+        style={{
+          shadowColor: 'red',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+        }}
+        onPress={onPress}>
+        <View>
+          <Title numberOfLines={1}> {title} </Title>
+          <Content numberOfLines={1}> {content}</Content>
+        </View>
+
       </Wrapper>
     </PostWrapper>
   );
