@@ -2,9 +2,11 @@ import React from 'react';
 import {View, Image} from 'react-native';
 
 import moment from 'moment';
+import RNFS from 'react-native-fs';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors'; 
+import {APP_DIRECTORY} from 'constants/App'; 
 
 const PostWrapper = styled.View`
   display: flex;
@@ -79,6 +81,7 @@ const Content = styled.Text`
 `;
 
 const Post = ({date, title, content, images, onPress}) => {
+  const thumbNail = images ? images.split(',')[0] : null;
 
   return (
     <PostWrapper>
@@ -108,6 +111,17 @@ const Post = ({date, title, content, images, onPress}) => {
           <Content numberOfLines={1}> {content}</Content>
         </View>
 
+        {thumbNail && (
+          <Image
+            source={{
+              uri: `file://${APP_DIRECTORY}/${thumbNail}.jpg`,
+            }} 
+            style={{
+              aspectRatio : 1.5, 
+              borderRadius : 10, 
+            }}
+          />
+        )}
       </Wrapper>
     </PostWrapper>
   );
