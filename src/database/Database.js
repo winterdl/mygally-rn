@@ -8,16 +8,16 @@ let databaseInstance = undefined;
 //Get all group list
 const getAllGroups = () =>
   getDatabase()
-    .then((db) => db.executeSql('SELECT * from groups'))
+    .then((db) => db.executeSql(`SELECT groups.*, COUNT(posts.id) as postCount from groups left join 
+      posts on groups.id = posts.group_id group by groups.id;`))
     .then(([results]) => {
       if (results === undefined) return [];
-
       const count = results.rows.length;
       let lists = [];
       for (let i = 0; i < count; i++) {
         const row = results.rows.item(i);
-        const {id, name, icon} = row;
-        lists.push({id, name, icon});
+        const {id, name, icon, postCount} = row;
+        lists.push({id, name, icon, postCount});
       }
 
       return lists;

@@ -43,7 +43,7 @@ const Home = ({navigation}) => {
       <GroupCard
         id={item.id}
         name={item.name}
-        count={item.count || 0}
+        count={item.postCount || 0}
         icon={item.icon}
         onPress={() =>
           navigation.navigate('Group', {screen: 'Index', params: {group: item}})

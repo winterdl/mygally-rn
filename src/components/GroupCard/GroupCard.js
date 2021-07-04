@@ -25,13 +25,13 @@ const Title = styled.Text`
   font-size: 19px;
   font-weight: 700;
   overflow: hidden;
-  padding: 0;
 `;
 
 const Count = styled.Text`
   margin-top: 6px;
-  color: lightgray;
+  color: #9da6c3;
   font-size: 15px;
+  padding-left: 5px;
 `;
 
 const GroupCard = ({
@@ -52,8 +52,9 @@ const GroupCard = ({
       <View>
         {icon && <Icon name={icon} size={35} color={Colors.fontColor} />}
       </View>
+
       <Title numberOfLines={1}> {name} </Title>
-      <Count>{count && `${count} items`} </Count>
+      <Count>{count >= 0 ? `${count} items` : ''} </Count>
     </GroupCardWrapper>
   );
 };
