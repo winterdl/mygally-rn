@@ -1,4 +1,4 @@
-import React, {useLayoutEffect, useMemo, useEffect} from 'react';
+import React, {useLayoutEffect, useMemo, useEffect, useState} from 'react';
 import {View, Text, Pressable, ToastAndroid, Image} from 'react-native';
 import {Button} from 'react-native-elements';
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -21,7 +21,7 @@ import {useModal} from 'contexts/ModalContext';
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
 
-import { APP_DIRECTORY } from 'constants/App';
+import {APP_DIRECTORY} from 'constants/App';
 
 const PostDetail = styled.View`
   background-color: white;
@@ -99,6 +99,7 @@ const PostDetailScreen = ({route, navigation}) => {
   const {groupId, isEditMode = false, post = {}} = route.params;
 
   const sheetRef = React.useRef(null);
+  const [deleteList, setDeleteList] = useState([]);
   const [title, titleRef, setTitleRef] = useReferredState(title);
   const [content, contentRef, setContentRef] = useReferredState(content);
 
@@ -278,17 +279,8 @@ const PostDetailScreen = ({route, navigation}) => {
       ? updatePost({...params, postId: parseInt(post.id)})
       : createPost(params));
 
-    index = 1;
-    for (let i = 0; i < images.length; i++) {
-      const {path, modificationDate} = images[i];
-      if (!path) continue;
-      RNFS.copyFile(
-        path,
-        `${APP_DIRECTORY}/${modificationDate}_${index++}.jpg`,
-      ).catch((err) => {
-        console.log('image file write fial', err);
-      });
-    }
+    saveImagesToDB();
+    removeImagesFromDB();
 
     if (query.error) {
       ToastAndroid.show(
@@ -330,6 +322,36 @@ const PostDetailScreen = ({route, navigation}) => {
 
   const handleDeleteImage = (index) => {
     setImages(images.filter((_, i) => i !== index));
+    if (images[index].fileName)
+      setDeleteList((prevState) => [...prevState, images[index].fileName]);
+  };
+
+  //remove image files from DB, which has been deleted from list
+  const removeImagesFromDB = () => {
+    deleteList.forEach(({fileName}) => {
+      RNFS.unlink(`${fileName}.jpg`).catch((err) => {
+        console.log(err.message);
+      });
+    });
+  };
+
+  //save selected images to DB
+  const saveImagesToDB = () => {
+    let index = 1;
+
+    images.forEach((image) => {
+      const {path, modificationDate} = image;
+
+      //only save newly added images, which has a path
+      if (path) {
+        RNFS.copyFile(
+          path,
+          `${APP_DIRECTORY}/${modificationDate}_${index++}.jpg`,
+        ).catch((err) => {
+          console.log(err.message);
+        });
+      }
+    });
   };
 
   return (
@@ -338,8 +360,7 @@ const PostDetailScreen = ({route, navigation}) => {
         <Carousel
           items={images.map(
             (img, i) =>
-              img.path ||
-              `file://${APP_DIRECTORY}/${img.fileName}.jpg`,
+              img.path || `file://${APP_DIRECTORY}/${img.fileName}.jpg`,
           )}
           onDelete={handleDeleteImage}
         />
