@@ -386,7 +386,12 @@ const PostDetailScreen = ({route, navigation}) => {
       <Button title="저장" onPress={handleSavePost} />
       <BottomSheet ref={sheetRef} snapPoints={[0, 180]}>
         {items.map((item) => (
-          <Menu android_ripple={{color: 'lightgray'}} onPress={item.onPress}>
+          <Menu
+            android_ripple={{color: 'lightgray'}}
+            onPress={() => {
+              item.onPress();
+              sheetRef.current.close();
+            }}>
             <Icon name={item.icon} size={28} />
             <MenuName> {item.name}</MenuName>
           </Menu>
