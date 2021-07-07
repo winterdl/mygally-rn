@@ -1,29 +1,27 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {View, Text, Pressable} from 'react-native';
 import {Calendar} from 'react-native-calendars';
-import moment from 'moment';
 import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import moment from 'moment';
+
+import {BottomSheet} from 'components/common';
+
+import {usePosts} from 'hooks';
+import {DATE_DB_FORMAT} from 'constants/App';
 
 import styled from 'styled-components';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const CalendarWrapper = styled.View`
   height: 100%;
   background-color: white;
 `;
 
-function CustomArrow({direction}) {
-  function handleClick() {
-    console.log(direction);
-  }
-  return (
-    <Pressable
-      onPress={handleClick}
-      style={{marginRight: 5, padding: 5}}
-      android_ripple={{color: 'lightgray'}}>
-      <Icon name={`chevron-${direction}`} size={30} />
-    </Pressable>
-  );
+const startDay = moment().startOf('day').format(DATE_DB_FORMAT);
+const endDay = moment().endOf('day').format(DATE_DB_FORMAT);
+
+function CustomArrow({ref, direction}) {
+  return <Icon name={`chevron-${direction}`} size={30} />;
 }
 
 function CalendarScreen({navigation}) {
@@ -31,34 +29,51 @@ function CalendarScreen({navigation}) {
   const [selectedDate, setSelectedDate] = useState();
   const [currentMonth, setCurrentMonth] = useState(Date());
 
-  useEffect(() => {
-    //TODO: mock db call
-    const dates = [
-      {
-        date: '2021-07-04',
-        title: 'hello1',
-        content: 'hello2',
-      },
-      {
-        date: '2021-07-05',
-        title: 'title',
-        content: 'this is content',
-      },
-    ];
+  const sheetRef = useRef(null);
+  const {postList, getFilteredPostList} = usePosts();
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      const startOfMonth = moment().startOf('month').format(DATE_DB_FORMAT);
+      const endOfMonth = moment().endOf('month').format(DATE_DB_FORMAT);
+      getFilteredPostList(startOfMonth, endOfMonth);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  useEffect(() => {
     let formattedDates = {};
-    dates.forEach(({date, ...rest}) => {
-      formattedDates[date] = {...rest, marked: true, dotColor: 'white'};
+    postList.forEach(({date, ...rest}) => {
+      const _date = date.split(' ')[0]; //YYYY-MM-DD
+      formattedDates[_date] = {...rest, marked: true, dotColor: 'white'};
     });
 
     setMarkedDates(formattedDates);
-  }, []);
+    sheetRef.current.present();
+  }, [postList]);
+
+  useEffect(() => {
+    const startOfMonth = moment(currentMonth)
+      .startOf('month')
+      .format(DATE_DB_FORMAT);
+    const endOfMonth = moment(currentMonth)
+      .endOf('month')
+      .format(DATE_DB_FORMAT);
+    getFilteredPostList(startOfMonth, endOfMonth);
+  }, [currentMonth]);
 
   function handleDateClick(day) {
     const {dateString} = day; //yyyy-mm-dd
     setSelectedDate(dateString);
   }
 
+  function handleMonthChange(type, callback) {
+    const newMonth =
+      type === 'subtract'
+        ? moment(currentMonth).subtract(1, 'month')
+        : moment(currentMonth).add(1, 'month');
+
+    setCurrentMonth(newMonth);
     callback();
   }
 
@@ -69,16 +84,21 @@ function CalendarScreen({navigation}) {
           onDayPress={handleDateClick}
           monthFormat={'yyyy MMMM'}
           onMonthChange={(month) => console.log('month changed', month)}
+          onPressArrowLeft={(subtractMonth) =>
+            handleMonthChange('subtract', subtractMonth)
+          }
+          onPressArrowRight={(addMonth) => handleMonthChange('add', addMonth)}
           enableSwipeMonths={true}
-          // renderArrow={(direction) => <CustomArrow direction={direction} />}
-          // renderHeader={test}
+          renderArrow={(direction) => (
+            <Icon name={`chevron-${direction}`} color="white" size={30} />
+          )}
           markedDates={{...markedDates, [selectedDate]: {selected: true}}}
           theme={{
             backgroundColor: 'rgba(0,0,0,1)',
             calendarBackground: 'transparent',
             textSectionTitleColor: '#b6c1cd',
             textSectionTitleDisabledColor: '#d9e1e8',
-            selectedDayBackgroundColor: 'white',
+            selectedDayBackgroundColor: '#ffffff',
             selectedDayTextColor: 'navy',
             todayTextColor: 'navy',
             dayTextColor: 'white',

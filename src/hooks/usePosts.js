@@ -17,6 +17,15 @@ const usePosts = (groupId) => {
       .catch((error) => ({error}));
   };
 
+  const getFilteredPostList = (start, end) => {
+    console.log('usePosts hook : getFilteredPostList', start, end);
+
+    return db
+      .getFilteredPosts(start, end)
+      .then(setPostList)
+      .catch((error) => ({error}));
+  };
+
   const createPost = (params) => {
     console.log('usePosts hook : createPost');
     return db
@@ -53,9 +62,10 @@ const usePosts = (groupId) => {
   return {
     postList,
     getPostList,
+    getFilteredPostList,
     createPost,
     updatePost,
-    deletePost
+    deletePost,
   };
 };
 

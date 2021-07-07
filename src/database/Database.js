@@ -8,8 +8,10 @@ let databaseInstance = undefined;
 //Get all group list
 const getAllGroups = () =>
   getDatabase()
-    .then((db) => db.executeSql(`SELECT groups.*, COUNT(posts.id) as postCount from groups left join 
-      posts on groups.id = posts.group_id group by groups.id;`))
+    .then((db) =>
+      db.executeSql(`SELECT groups.*, COUNT(posts.id) as postCount from groups left join 
+      posts on groups.id = posts.group_id group by groups.id;`),
+    )
     .then(([results]) => {
       if (results === undefined) return [];
       const count = results.rows.length;
@@ -100,6 +102,27 @@ const getAllPosts = async (groupId) =>
       .catch((error) => error),
   );
 
+const getFilteredPosts = async (start, end) =>
+  getDatabase()
+    .then((db) =>
+      db.executeSql('SELECT * FROM posts WHERE date between ? and ? ', [
+        start,
+        end,
+      ]),
+    )
+    .then(([results]) => {
+      if (results === undefined) return [];
+
+      const count = results.rows.length;
+      let lists = [];
+      for (let i = 0; i < count; i++) {
+        const row = results.rows.item(i);
+        lists.push(row);
+      }
+      return lists;
+    })
+    .catch((error) => error);
+
 const getDatabase = async () => {
   if (databaseInstance !== undefined) return Promise.resolve(databaseInstance);
 
@@ -142,7 +165,8 @@ export const sqliteDatabase = {
   getAllGroups,
   createGroup,
   getAllPosts,
+  getFilteredPosts,
   createPost,
   updatePost,
-  deletePost
+  deletePost,
 };
