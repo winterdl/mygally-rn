@@ -8,7 +8,7 @@ import RNFS from 'react-native-fs';
 
 import {BottomSheet, Carousel} from 'components/common';
 
-import {DATE_FORMAT, TIME_FORMAT} from 'constants/App';
+import {DATE_DISPLAY_FORMAT, DATE_DB_FORMAT,TIME_FORMAT,} from 'constants/App';
 
 import {
   usePosts,
@@ -151,7 +151,7 @@ const PostDetailScreen = ({route, navigation}) => {
         ),
       headerTitle: () => (
         <DateInfo>
-          <Date> {date.format(DATE_FORMAT)} </Date>
+          <Date> {date.format(DATE_DISPLAY_FORMAT)} </Date>
           <Time> {date.format(TIME_FORMAT)}</Time>
         </DateInfo>
       ),
@@ -268,7 +268,7 @@ const PostDetailScreen = ({route, navigation}) => {
     let index = 1;
     const params = {
       groupId: parseInt(groupId),
-      date: new moment().toDate().toUTCString(),
+      date: new moment().format(DATE_DB_FORMAT),
       title: titleRef.current,
       content: contentRef.current,
       images: images
@@ -297,7 +297,7 @@ const PostDetailScreen = ({route, navigation}) => {
     navigation.goBack();
   };
 
-  const handleDeletePost = () => {
+  const handleDeletePost = () => { 
     openModal(<Text> 글을 삭제 하시겠습니까? </Text>, {
       onConfirm: async () => {
         const del = await deletePost(post.id);
@@ -353,6 +353,7 @@ const PostDetailScreen = ({route, navigation}) => {
       }
     });
   };
+
 
   return (
     <PostDetail>
