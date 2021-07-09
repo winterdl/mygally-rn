@@ -1,6 +1,7 @@
 import React, {useEffect} from 'react';
 import {FlatList} from 'react-native';
 import {HeaderBackButton} from '@react-navigation/stack';
+import moment from 'moment';
 
 import Header from 'components/Header';
 import {FloatingButton} from 'components/common';
@@ -16,11 +17,10 @@ const Group = styled.View`
   height: 100%;
 `;
 
-const PostWrapper = styled.View`
+const Wrapper = styled.View`
   height: 100%;
-  flex : 1;
+  flex: 1;
   position: relative;
-
 `;
 
 const Divider = styled.View`
@@ -32,7 +32,76 @@ const Divider = styled.View`
 `;
 
 const PostList = styled.FlatList``;
- 
+
+const PostWrapper = styled.View`
+  display: flex;
+  flex-direction: row;
+  padding-left: 20px;
+  padding-right: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+`;
+
+const Time = styled.View`
+  position: relative;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 35px;
+`;
+
+const Month = styled.Text`
+  font-weight: bold;
+  font-size: 16px;
+  color: ${Colors.fontColor};
+  text-align: center;
+`;
+
+const Day = styled.Text`
+  color: ${Colors.fontColor};
+`;
+
+const DotWrapper = styled.View`
+  margin: 0 20px;
+  position: relative;
+`;
+
+const Dot = styled.View`
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-radius: 50px;
+  border-color: ${Colors['primary-100']};
+  border-width: 2px;
+  z-index: 2;
+  top: 8px;
+  right: -2px;
+  background-color: white;
+`;
+
+const PostView = ({post, onPress}) => {
+  return (
+    <PostWrapper>
+      <Time>
+        <Month> {moment(post.date).format('MMM')}</Month>
+        <Day> {moment(post.date).format('DD')}</Day>
+      </Time>
+      <DotWrapper>
+        <Dot></Dot>
+      </DotWrapper>
+
+      <Post
+        date={post.date}
+        title={post.title}
+        content={post.content}
+        images={post.images}
+        onPress={onPress}
+      />
+    </PostWrapper>
+  );
+};
 const GroupScreen = ({route, navigation}) => {
   const {
     group: {id, name},
@@ -60,21 +129,18 @@ const GroupScreen = ({route, navigation}) => {
         }
         headerTitle={name}
       />
-      <PostWrapper>
+      <Wrapper>
         <Divider />
         <PostList
           data={postList}
           renderItem={({item}) => (
-            <Post
-              date={item.date}
-              title={item.title}
-              content={item.content}
-              images={item.images}
+            <PostView
+              post={item}
               onPress={() =>
                 navigation.navigate('PostDetail', {
                   groupId: id,
-                  isEditMode: true,
                   post: item,
+                  isEditMode: true,
                 })
               }
             />
@@ -82,7 +148,7 @@ const GroupScreen = ({route, navigation}) => {
           numColumns={1}
           keyExtractor={(item, index) => index}
         />
-      </PostWrapper>
+      </Wrapper>
       <FloatingButton
         onPress={() => navigation.navigate('PostDetail', {groupId: id})}
       />
