@@ -77,6 +77,7 @@ function CalendarScreen({navigation}) {
     setSelectedDate(dateString);
   }
 
+  //handles event when month changes
   function handleMonthChange(type, callback) {
     const newMonth =
       type === 'subtract'
@@ -84,6 +85,7 @@ function CalendarScreen({navigation}) {
         : moment(currentMonth).add(1, 'month');
 
     setCurrentMonth(newMonth);
+    setSelectedDate(moment(newMonth).startOf('month').format('YYYY-MM-DD')); //select first day of new month
     callback();
   }
 
