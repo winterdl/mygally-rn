@@ -1,15 +1,18 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {View, Text, Pressable} from 'react-native';
+import {Dimensions} from 'react-native';
 import {Calendar} from 'react-native-calendars';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import moment from 'moment';
 
 import {BottomSheet} from 'components/common';
+import Post from 'components/Post';
+import Empty from 'components/Empty/Empty';
 
 import {usePosts} from 'hooks';
-import {DATE_DB_FORMAT} from 'constants/App';
+import {DATE_DB_FORMAT, EMPTY_CONTENT} from 'constants/App';
 
+import Colors from 'datas/Colors';
 import styled from 'styled-components';
 
 const CalendarWrapper = styled.View`
@@ -17,17 +20,17 @@ const CalendarWrapper = styled.View`
   background-color: white;
 `;
 
-const startDay = moment().startOf('day').format(DATE_DB_FORMAT);
-const endDay = moment().endOf('day').format(DATE_DB_FORMAT);
-
-function CustomArrow({ref, direction}) {
-  return <Icon name={`chevron-${direction}`} size={30} />;
-}
+const PostList = styled.FlatList`
+  padding: 15px;
+`;
 
 function CalendarScreen({navigation}) {
   const [markedDates, setMarkedDates] = useState({});
-  const [selectedDate, setSelectedDate] = useState();
+  const [selectedDate, setSelectedDate] = useState(
+    moment().format('YYYY-MM-DD'),
+  );
   const [currentMonth, setCurrentMonth] = useState(Date());
+  const [postListByGroup, setPostListByGroup] = useState([]);
 
   const sheetRef = useRef(null);
   const {postList, getFilteredPostList} = usePosts();
@@ -43,15 +46,22 @@ function CalendarScreen({navigation}) {
 
   useEffect(() => {
     let formattedDates = {};
+    let postListByGroup = {};
     postList.forEach(({date, ...rest}) => {
       const _date = date.split(' ')[0]; //YYYY-MM-DD
       formattedDates[_date] = {...rest, marked: true, dotColor: 'white'};
+
+      if (!postListByGroup[_date]) postListByGroup[_date] = [];
+      postListByGroup[_date].push(rest);
     });
 
     setMarkedDates(formattedDates);
+    setPostListByGroup(postListByGroup);
+
     sheetRef.current.present();
   }, [postList]);
 
+  //load datas in current month
   useEffect(() => {
     const startOfMonth = moment(currentMonth)
       .startOf('month')
@@ -121,6 +131,39 @@ function CalendarScreen({navigation}) {
           }}
         />
       </LinearGradient>
+
+      <BottomSheet ref={sheetRef} snapPoints={[0, '45%']}>
+        <PostList
+          data={postListByGroup[selectedDate] || []}
+          contentContainerStyle={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            flex: postListByGroup[selectedDate] ? 0 : 1,
+          }}
+          ListEmptyComponent={<Empty message={EMPTY_CONTENT} />}
+          renderItem={({item}) => (
+            <Post
+              date={item.date}
+              title={item.title}
+              content={item.content}
+              images={item.images}
+              style={{
+                width: Dimensions.get('window').width - 40,
+                backgroundColor: Colors.backgroundColor,
+                marginVertical: 8,
+                marginHorizontal: 3,
+              }}
+              onPress={() =>
+                navigation.navigate('PostDetail', {
+                  groupId: item.group_id,
+                  isEditMode: true,
+                  post: item,
+                })
+              }
+            />
+          )}
+        />
+      </BottomSheet>
     </CalendarWrapper>
   );
 }
