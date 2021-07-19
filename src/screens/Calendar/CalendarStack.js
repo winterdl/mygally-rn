@@ -1,20 +1,22 @@
 import React from 'react';
-import {Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
+
+import CalendarScreen from './CalendarScreen';
+import PostDetailScreen from '../Home/PostDetailScreen';
 
 const Stack = createStackNavigator();
 
-function Calendar() {
-  return <Text> Calendar!</Text>;
-}
-
 const CalendarStack = () => {
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}>
-      <Stack.Screen name="Index" component={Calendar} />
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Index"
+        component={CalendarScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen name="PostDetail" component={PostDetailScreen} />
     </Stack.Navigator>
   );
 };

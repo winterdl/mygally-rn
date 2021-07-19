@@ -11,7 +11,7 @@
     "devtools": "react-devtools"
   },
   "dependencies": {
-    "@gorhom/bottom-sheet": "2",
+    "@gorhom/bottom-sheet": "2.3.0",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-navigation/bottom-tabs": "^5.11.7",
