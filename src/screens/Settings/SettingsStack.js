@@ -2,6 +2,8 @@ import React from 'react';
 import {Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
+import SettingsScreen from './SettingsScreen';
+
 const Stack = createStackNavigator();
 
 function Settings() {
@@ -14,7 +16,7 @@ const SettingsStack = () => {
       screenOptions={{
         headerShown: false,
       }}>
-      <Stack.Screen name="Index" component={Settings} />
+      <Stack.Screen name="Index" component={SettingsScreen} />
     </Stack.Navigator>
   );
 };
