@@ -75,6 +75,7 @@ function CalendarScreen({navigation}) {
   function handleDateClick(day) {
     const {dateString} = day; //yyyy-mm-dd
     setSelectedDate(dateString);
+    sheetRef.current?.present();
   }
 
   //handles event when month changes
@@ -91,7 +92,7 @@ function CalendarScreen({navigation}) {
 
   return (
     <CalendarWrapper>
-      <LinearGradient colors={['#6a81ea', '#754ca3']} style={{height: '55%'}}>
+      <LinearGradient colors={['#6a81ea', '#754ca3']} style={{height: '60%'}}>
         <Calendar
           onDayPress={handleDateClick}
           monthFormat={'yyyy MMMM'}
@@ -134,12 +135,15 @@ function CalendarScreen({navigation}) {
         />
       </LinearGradient>
 
-      <BottomSheet ref={sheetRef} snapPoints={[0, '45%']}>
+      <BottomSheet
+        ref={sheetRef}
+        index={0}
+        snapPoints={['40%', '80%']}>
         <PostList
           data={postListByGroup[selectedDate] || []}
           contentContainerStyle={{
             alignItems: 'center',
-            justifyContent: 'center',
+            // justifyContent: 'center',
             flex: postListByGroup[selectedDate] ? 0 : 1,
           }}
           ListEmptyComponent={<Empty message={EMPTY_CONTENT} />}
