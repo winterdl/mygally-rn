@@ -1,8 +1,6 @@
 import React from 'react';
-import {View, Text, Pressable} from 'react-native';
+import {View, Text} from 'react-native';
 import {SearchBar} from 'react-native-elements';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import {HeaderBackButton} from '@react-navigation/stack';
 
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
@@ -13,6 +11,7 @@ const HeaderWrapper = styled.View`
   background-color: white;
   border-bottom-left-radius: 25px;
   border-bottom-right-radius: 25px;
+  elevation: 1;
 `;
 
 const Title = styled.View`
@@ -22,7 +21,7 @@ const Title = styled.View`
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: ${(props) => (props.searchVisible ? '16px' : '0px')};
 `;
 
 const TitleText = styled.Text`
@@ -32,7 +31,12 @@ const TitleText = styled.Text`
   margin: ${(props) => (props.showBackButton ? '20px' : '0px')};
 `;
 
-const Header = ({headerLeft, headerRight, headerTitle}) => {
+const Header = ({
+  headerLeft,
+  headerRight,
+  headerTitle,
+  searchVisible = true,
+}) => {
   return (
     <HeaderWrapper>
       <Title>
@@ -42,23 +46,26 @@ const Header = ({headerLeft, headerRight, headerTitle}) => {
         </View>
         <Text> {headerRight} </Text>
       </Title>
-      <SearchBar
-        placeholder="Search"
-        round
-        showCancel
-        lightTheme={true}
-        containerStyle={{
-          backgroundColor: 'white',
-          borderTopColor: 'transparent',
-          borderBottomColor: 'transparent',
-          borderWidth: 0,
-          padding: 0,
-          margin: 0,
-        }}
-        inputContainerStyle={{
-          backgroundColor: Colors.backgroundColor,
-        }}
-      />
+      {searchVisible && (
+        <SearchBar
+          placeholder="Search"
+          round
+          showCancel
+          lightTheme={true}
+          containerStyle={{
+            backgroundColor: 'white',
+            borderTopColor: 'transparent',
+            borderBottomColor: 'transparent',
+            borderWidth: 0,
+            padding: 0,
+            margin: 0,
+          }}
+          inputContainerStyle={{
+            backgroundColor: Colors.backgroundColor,
+            height: 40,
+          }}
+        />
+      )}
     </HeaderWrapper>
   );
 };
