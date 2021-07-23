@@ -15,7 +15,10 @@ import MenuCard from 'components/MenuCard';
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
 
+import {APP_DIRECTORY} from 'constants/App';
+import {DB_FILE_NAME} from 'constants/Database';
 import {useGoogleLogin} from 'hooks';
+import * as GoogleDrive from 'utils/GoogleDrive';
 
 const DataSyncContainer = styled.View`
   padding: 25px;
@@ -68,8 +71,18 @@ const DataSyncScreen = ({route, navigation}) => {
   const onDataRestore = () => {
     console.log('restore');
   };
-  const onDataBackup = () => {
-    console.log('backup');
+
+  const onDataBackup = async () => {
+    try {
+      const dbPath = '/data/data/com.mygallyrn/databases/' + DB_FILE_NAME;
+
+      await GoogleDrive.uploadDataFile(dbPath);
+      await GoogleDrive.uploadImageFile();
+      ToastAndroid.show('백업 파일을 업로드 했습니다.', ToastAndroid.SHORT);
+    } catch (error) {
+      ToastAndroid.show(error.toString(), ToastAndroid.SHORT);
+      console.log('BACKUP ERROR', error);
+    }
   };
 
   //check for sign in status
@@ -84,7 +97,6 @@ const DataSyncScreen = ({route, navigation}) => {
       //if signed in, get user info
       if (isSignedIn) await getCurrentUserInfo();
     } catch (error) {
-      console.error('CHECK SIGN IN FAIL', error);
       ToastAndroid.show(error.toString(), ToastAndroid.SHORT);
     }
     setGettingLoginStatus(false);
@@ -95,7 +107,6 @@ const DataSyncScreen = ({route, navigation}) => {
     try {
       await signIn();
     } catch (error) {
-      console.error('SIGN IN FAIL', error.toString());
       ToastAndroid.show(error.toString(), ToastAndroid.SHORT);
     }
     setGettingLoginStatus(false);
