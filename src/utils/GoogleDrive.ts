@@ -38,7 +38,30 @@ async function createDirectory(name: string): Promise<String> {
   return directoryId;
 }
 
-export async function uploadDataFile(path: string): Promise<void | String> {
+/**
+ * get files in google drive
+ * @param query query string to filter files or folders.
+ * for detailed query examples see : https://developers.google.com/drive/api/v3/search-files
+ * @returns
+ */
+export async function getFileList(query: string = ''): Promise<Set<String>> {
+  const {files} = await GDrive.files.list({q: query}).then((res) => res.json());
+
+  let fileList = new Set<String>();
+  files.forEach((file: {name: string}) => fileList.add(file.name));
+
+  return fileList;
+}
+
+/**
+ * upload a file in google drive
+ * @param path path of a file which will be uploaded
+ * @param fileName name of a uploaded file
+ */
+export async function uploadDataFile(
+  path: string,
+  fileName: string,
+): Promise<void | String> {
   const isGDInitialized = await initGoogleDrive();
   if (!isGDInitialized) throw new Error('Failed to Initialized Google Drive');
 
@@ -47,7 +70,6 @@ export async function uploadDataFile(path: string): Promise<void | String> {
 
   //upload file
   const fileContent = await RNFS.readFile(path, 'base64');
-  const FILE_NAME = APP_DIRECTORY + '.' + moment().format('YYYYMMDDHHmmss');
   const isBase64 = true;
 
   const upload = await GDrive.files.createFileMultipart(
@@ -55,10 +77,52 @@ export async function uploadDataFile(path: string): Promise<void | String> {
     '',
     {
       parents: [directoryId],
-      name: FILE_NAME,
+      name: fileName,
     },
     isBase64,
   );
 
   if (!upload.ok) throw new Error(ErrorCode.FILE_UPLOAD_FAIL);
+}
+
+/**
+ * upload all images in path
+ * @param path direcotry path of where image files are located
+ */
+export async function uploadImageFile(path: string) {
+  const images = await RNFS.readDir(path);
+
+  //create directory
+  const directoryId = await createDirectory(`${APP_DIRECTORY}_images`);
+
+  //search files under specific directory
+  const fileList = await getFileList(
+    `'${directoryId}' in parents and trashed=false`,
+  );
+
+  let requests: Promise<void | String>[] = [];
+  const isBase64 = true;
+
+  for (let i = 0; i < images.length; i++) {
+    const {path, name} = images[i];
+
+    //skip if file is not a jpg format or already uploaded in google drive
+    if (fileList.has(name) || !name.includes('.jpg')) continue;
+
+    const fileContent = await RNFS.readFile(path, 'base64');
+    const upload = async (): Promise<void | String> =>
+      await GDrive.files.createFileMultipart(
+        fileContent,
+        'image/jpg',
+        {
+          parents: [directoryId],
+          name,
+        },
+        isBase64,
+      );
+
+    requests.push(upload());
+  }
+
+  Promise.all(requests).catch(() => new Error(ErrorCode.FILE_UPLOAD_FAIL));
 }

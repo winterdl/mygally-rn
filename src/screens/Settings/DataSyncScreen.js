@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {GoogleSignin} from 'react-native-google-signin';
 import {HeaderBackButton} from '@react-navigation/stack';
+import moment from 'moment';
 
 import Header from 'components/Header';
 import MenuCard from 'components/MenuCard';
@@ -74,15 +75,18 @@ const DataSyncScreen = ({route, navigation}) => {
 
   const onDataBackup = async () => {
     try {
-      const dbPath = '/data/data/com.mygallyrn/databases/' + DB_FILE_NAME;
-
-      await GoogleDrive.uploadDataFile(dbPath);
-      await GoogleDrive.uploadImageFile();
+      setGettingLoginStatus(true);
+      const dbFilePath = '/data/data/com.mygallyrn/databases/' + DB_FILE_NAME;
+      const fileName = 'DayDiary' + '.' + moment().format('YYYYMMDDHHmmss');
+      await GoogleDrive.uploadDataFile(dbFilePath, fileName);
+      await GoogleDrive.uploadImageFile(APP_DIRECTORY);
       ToastAndroid.show('백업 파일을 업로드 했습니다.', ToastAndroid.SHORT);
     } catch (error) {
       ToastAndroid.show(error.toString(), ToastAndroid.SHORT);
       console.log('BACKUP ERROR', error);
     }
+
+    setGettingLoginStatus(false);
   };
 
   //check for sign in status
