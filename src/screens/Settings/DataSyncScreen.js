@@ -17,7 +17,7 @@ import styled from 'styled-components';
 import Colors from 'datas/Colors';
 
 import {APP_DIRECTORY} from 'constants/App';
-import {DB_FILE_NAME} from 'constants/Database';
+import {DB_FILE_NAME, DB_DIRECTORY} from 'constants/Database';
 import {useGoogleLogin} from 'hooks';
 import * as GoogleDrive from 'utils/GoogleDrive';
 
@@ -69,16 +69,40 @@ const DataSyncScreen = ({route, navigation}) => {
     },
   ];
 
-  const onDataRestore = () => {
-    console.log('restore');
+  //check for sign in status
+  useEffect(() => {
+    _checkSignInStatus();
+  }, []);
+
+  const onDataRestore = async () => {
+    if (!userInfo) {
+      _signIn();
+      return;
+    }
+
+    try {
+      setGettingLoginStatus(true);
+      await GoogleDrive.retrieveFile();
+      ToastAndroid.show('백업 파일을 복구했습니다.', ToastAndroid.SHORT);
+    } catch (error) {
+      ToastAndroid.show(error.toString(), ToastAndroid.SHORT);
+    }
+    setGettingLoginStatus(false);
   };
 
   const onDataBackup = async () => {
+    if (!userInfo) {
+      _signIn();
+      return;
+    }
+
     try {
       setGettingLoginStatus(true);
-      const dbFilePath = '/data/data/com.mygallyrn/databases/' + DB_FILE_NAME;
       const fileName = 'DayDiary' + '.' + moment().format('YYYYMMDDHHmmss');
-      await GoogleDrive.uploadDataFile(dbFilePath, fileName);
+      await GoogleDrive.uploadDataFile(
+        `${DB_DIRECTORY}/${DB_FILE_NAME}`,
+        fileName,
+      );
       await GoogleDrive.uploadImageFile(APP_DIRECTORY);
       ToastAndroid.show('백업 파일을 업로드 했습니다.', ToastAndroid.SHORT);
     } catch (error) {
@@ -88,11 +112,6 @@ const DataSyncScreen = ({route, navigation}) => {
 
     setGettingLoginStatus(false);
   };
-
-  //check for sign in status
-  useEffect(() => {
-    _checkSignInStatus();
-  }, []);
 
   const _checkSignInStatus = async () => {
     const isSignedIn = await checkSignInStatus();
