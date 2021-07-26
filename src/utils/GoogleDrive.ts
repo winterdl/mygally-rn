@@ -29,7 +29,10 @@ export async function initGoogleDrive(): Promise<boolean> {
  * @param name name of directory
  * @returns directory id
  */
-async function createDirectory(name: string): Promise<String> {
+export async function createDirectory(name: string): Promise<String> {
+  const isGDInitialized = await initGoogleDrive();
+  if (!isGDInitialized) throw new Error('Failed to Initialized Google Drive');
+
   const directoryId = await GDrive.files.safeCreateFolder({
     name, //directory name
     parents: ['root'],
@@ -96,7 +99,7 @@ function getFileName(fileList: Array<{name: string}>): Set<String> {
 export async function uploadImageFile(path: string) {
   const isGDInitialized = await initGoogleDrive();
   if (!isGDInitialized) throw new Error('Failed to Initialized Google Drive');
-  
+
   const images = await RNFS.readDir(path);
 
   //create directory
@@ -152,19 +155,13 @@ async function downloadFile(
 /**
  * restore db file and images from google drive
  */
-export async function retrieveFile() {
+export async function retrieveFile(fileId: string) {
   const isGDInitialized = await initGoogleDrive();
   if (!isGDInitialized) throw new Error('Failed to Initialized Google Drive');
 
-  const directoryId = await createDirectory(GD_ROOT_DIRECTORY);
-  const fileList = await getFileList(`'${directoryId}' in parents`);
-
-  if (!fileList.length) throw new Error(ErrorCode.BACKUP_FILE_NOT_EXISTS);
-
-  const [recentFile] = fileList;
   let request: Promise<String>[] = [];
 
-  request.push(downloadFile(recentFile.id, DB_DIRECTORY, DB_FILE_NAME));
+  request.push(downloadFile(fileId, DB_DIRECTORY, DB_FILE_NAME));
 
   const imgDirectoryId = await createDirectory(`${GD_ROOT_DIRECTORY}_images`);
   const localImages = await RNFS.readDir(APP_DIRECTORY).then(getFileName);
