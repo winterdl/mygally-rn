@@ -1,14 +1,12 @@
 import React from 'react';
-import {Text} from 'react-native';
 import {createStackNavigator} from '@react-navigation/stack';
 
 import SettingsScreen from './SettingsScreen';
+import DataSyncScreen from './DataSyncScreen';
+import LockScreen from './LockScreen';
+import ThemeScreen from './ThemeScreen';
 
 const Stack = createStackNavigator();
-
-function Settings() {
-  return <Text> Settings!</Text>;
-}
 
 const SettingsStack = () => {
   return (
@@ -17,6 +15,9 @@ const SettingsStack = () => {
         headerShown: false,
       }}>
       <Stack.Screen name="Index" component={SettingsScreen} />
+      <Stack.Screen name="DataSyncScreen" component={DataSyncScreen} />
+      <Stack.Screen name="LockScreen" component={LockScreen} />
+      <Stack.Screen name="ThemeScreen" component={ThemeScreen} />
     </Stack.Navigator>
   );
 };

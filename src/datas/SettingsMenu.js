@@ -1,3 +1,6 @@
+import {Linking} from 'react-native';
+import {DEV_EMAIL} from 'constants/App';
+
 const menu = [
   {
     groupName: 'Account',
@@ -25,7 +28,8 @@ const menu = [
       {
         name: '의견 보내기',
         icon: 'feedback',
-        routeTo: 'FeedbackScreen',
+        routeTo: null,
+        callback: () => Linking.openURL(`mailto:${DEV_EMAIL}`),
       },
     ],
   },

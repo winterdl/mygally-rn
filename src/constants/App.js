@@ -7,3 +7,5 @@ export const DATE_DB_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 export const TIME_FORMAT = 'hh : mm A';
 
 export const EMPTY_CONTENT = '등록된 글이 없어요 😮';
+
+export const DEV_EMAIL = 'angela.lee205@gmail.com';
