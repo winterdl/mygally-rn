@@ -13,7 +13,7 @@ const menu = [
       {
         name: '잠금 설정',
         icon: 'lock',
-        routeTo: 'LockScreen',
+        routeTo: 'LockHomeScreen',
       },
       {
         name: '테마 설정',
