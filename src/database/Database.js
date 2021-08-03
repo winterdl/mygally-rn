@@ -87,7 +87,7 @@ const deletePost = (postId) =>
 const getAllPosts = async (groupId) =>
   getDatabase().then((db) =>
     db
-      .executeSql('SELECT * FROM posts WHERE group_id = ? ', [groupId])
+      .executeSql('SELECT * FROM posts WHERE group_id = ? ORDER BY id DESC ', [groupId])
       .then(([results]) => {
         if (results === undefined) return [];
 
