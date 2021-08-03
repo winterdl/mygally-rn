@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "2.3.0",
+    "@haskkor/react-native-pincode": "^1.22.6",
     "@react-native-community/async-storage": "^1.12.1",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-navigation/bottom-tabs": "^5.11.7",
@@ -32,6 +33,7 @@
     "react-native-google-signin": "^2.1.1",
     "react-native-image-crop-picker": "^0.35.3",
     "react-native-image-picker": "^3.2.1",
+    "react-native-keychain": "5.0.1",
     "react-native-linear-gradient": "^2.5.6",
     "react-native-raw-bottom-sheet": "^2.2.0",
     "react-native-reanimated": "^1.13.2",
