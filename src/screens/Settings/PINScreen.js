@@ -5,35 +5,51 @@ import PINCode, {deleteUserPinCode} from '@haskkor/react-native-pincode';
 import Colors from 'datas/Colors';
 
 import {useAuth} from 'contexts/AuthContext';
-import {PIN_CODE_ENTER, PIN_CODE_CHOOSE} from 'constants/App';
+import {
+  PIN_CODE_ENTER,
+  PIN_CODE_CHOOSE,
+  PIN_INITIAL_LAUNCH,
+  PIN_REMOVE,
+  PIN_RESET,
+} from 'constants/App';
 
 const PINScreen = ({route, navigation}) => {
-  const {status, resetPIN = false, callback, isInitialLaunch} = route.params;
-  const {toggleLockState} = useAuth();
+  const {status, pinType, subtitleChoose} = route.params;
+  const {setIsAppLocked} = useAuth();
 
   const onFinishEnter = async () => {
     if (status === PIN_CODE_ENTER) {
-      if (isInitialLaunch) {
-        toggleLockState();
+      if (pinType === PIN_INITIAL_LAUNCH) {
+        setIsAppLocked(false);
         return;
-      } else await deleteUserPinCode();
+      }
+
+      if (pinType === PIN_REMOVE) {
+        await deleteUserPinCode();
+        navigation.goBack();
+      }
+
+      if (pinType === PIN_RESET) {
+        navigation.navigate('PINScreen', {status: PIN_CODE_CHOOSE});
+      }
     }
 
-    if (resetPIN) navigation.navigate('PINScreen', {status: PIN_CODE_CHOOSE});
-
-    navigation.goBack();
+    if (status === PIN_CODE_CHOOSE) navigation.goBack();
   };
 
   return (
     <View style={{flex: 1}}>
       <PINCode
         status={status}
-        subtitleChoose="비밀번호를 입력해주세요."
-        subtitleEnter="비밀번호를 입력해주세요."
+        titleChoose="Enter your PIN Code"
+        subtitleChoose={subtitleChoose || '비밀번호를 입력해주세요.'}
+        titleConfirm="Confirm your PIN Code"
         subtitleConfirm="비밀번호를 한번 더 입력해주세요."
-        titleConfirmFailed="비밀번호가 일치하지 않습니다."
+        subtitleEnter="비밀번호를 입력해주세요."
+        titleConfirmFailed="Please try again"
+        subtitleError="비밀번호가 일치하지 않습니다."
         vibrationEnabled={false}
-        touchIDDisabled={true} 
+        touchIDDisabled={true}
         disableLockScreen={true}
         styleMainContainer={{backgroundColor: 'white'}}
         stylePinCodeColorTitle={Colors.fontColor}

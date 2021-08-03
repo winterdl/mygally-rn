@@ -3,7 +3,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 
 import SettingsScreen from './SettingsScreen';
 import DataSyncScreen from './DataSyncScreen';
-import LockScreen from './LockScreen';
+import LockStack from './LockStack';
 import ThemeScreen from './ThemeScreen';
 
 const Stack = createStackNavigator();
@@ -16,7 +16,7 @@ const SettingsStack = () => {
       }}>
       <Stack.Screen name="Index" component={SettingsScreen} />
       <Stack.Screen name="DataSyncScreen" component={DataSyncScreen} />
-      <Stack.Screen name="LockScreen" component={LockScreen} />
+      <Stack.Screen name="LockHomeScreen" component={LockStack} />
       <Stack.Screen name="ThemeScreen" component={ThemeScreen} />
     </Stack.Navigator>
   );

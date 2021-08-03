@@ -1,77 +1,45 @@
-import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {getFocusedRouteNameFromRoute} from '@react-navigation/native';
+import React, {useEffect} from 'react';
+import {AppState} from 'react-native';
+import {createStackNavigator} from '@react-navigation/stack';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import AppStack from './AppStack';
+import PINScreen from './Settings/PINScreen';
+import {PIN_CODE_ENTER, PIN_INITIAL_LAUNCH} from '../constants/App';
 
-import HomeStack from './Home/HomeStack';
-import CalendarStack from './Calendar/CalendarStack';
-import SettingsStack from './Settings/SettingsStack';
+import {AuthContext} from 'contexts/AuthContext';
 
-import Colors from 'datas/Colors';
+import {hasUserSetPinCode} from '@haskkor/react-native-pincode';
 
-const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
+const AuthStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="PINSCreen"
+      component={PINScreen}
+      options={{headerShown: false}}
+      initialParams={{status: PIN_CODE_ENTER, pinType: PIN_INITIAL_LAUNCH}}
+    />
+  </Stack.Navigator>
+);
 
-const hideTabRoutes = ['PostDetail'];
 const RootStack = () => {
-  
-  const getTabBarVisibility = (route) => {
-    const routeName = getFocusedRouteNameFromRoute(route);
-    if (hideTabRoutes.includes(routeName)) return false;
+  const {isAppLocked, setIsAppLocked} = React.useContext(AuthContext);
 
-    return true;
+  useEffect(() => {
+    AppState.addEventListener('change', onAppStateChange);
+
+    return () => AppState.removeEventListener('change', onAppStateChange);
+  }, []);
+
+  const onAppStateChange = async (nextAppState) => {
+    //lock application when pincode is set and app goes background
+    if (nextAppState === 'background') {
+      const hasPinCode = await hasUserSetPinCode();
+      if (hasPinCode) setIsAppLocked(true);
+    }
   };
 
-  return (
-    <Tab.Navigator
-      tabBarOptions={{
-        activeTintColor: Colors.active,
-        inactiveTintColor: Colors['primary-100'],
-        style: {
-          borderWidth: 0.5,
-          borderBottomWidth: 0,
-          borderTopLeftRadius: 15,
-          borderTopRightRadius: 15,
-          borderColor: 'transparent',
-          overflow: 'hidden',
-          height: 60,
-        },
-        tabStyle: {
-          paddingTop: 10,
-          paddingBottom: 10,
-          zIndex: 110,
-        },
-      }}>
-      <Tab.Screen
-        name="Home"
-        component={HomeStack}
-        options={() => ({
-          tabBarIcon: ({color}) => (
-            <Icon name="folder" size={24} color={color} />
-          ),
-        })}
-      />
-      <Tab.Screen
-        name="Calendar"
-        component={CalendarStack}
-        options={({route}) => ({
-          tabBarIcon: ({color}) => (
-            <Icon name="date-range" size={24} color={color} />
-          ),
-          tabBarVisible: getTabBarVisibility(route),
-        })}
-      />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsStack}
-        options={{
-          tabBarIcon: ({color}) => (
-            <Icon name="settings" size={24} color={color} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
+  return isAppLocked ? <AuthStack /> : <AppStack />;
 };
 
 export default RootStack;

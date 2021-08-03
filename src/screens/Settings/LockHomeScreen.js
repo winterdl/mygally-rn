@@ -9,7 +9,12 @@ import MenuCard from 'components/MenuCard';
 import styled from 'styled-components';
 import Colors from 'datas/Colors';
 
-import {PIN_CODE_ENTER, PIN_CODE_CHOOSE} from 'constants/App';
+import {
+  PIN_CODE_ENTER,
+  PIN_CODE_CHOOSE,
+  PIN_REMOVE,
+  PIN_RESET,
+} from 'constants/App';
 
 const LockScreenContainer = styled.View`
   padding: 25px;
@@ -46,7 +51,8 @@ const LockScreen = ({route, navigation}) => {
             if (!hasPinCode) return;
             navigation.navigate('PINScreen', {
               status: PIN_CODE_ENTER,
-              resetPIN: true,
+              pinType: PIN_RESET,
+              subtitleChoose : '새 비밀번호를 입력해주세요.'
             });
           },
         },
@@ -64,8 +70,10 @@ const LockScreen = ({route, navigation}) => {
 
   const onOpenPinCode = () => {
     const status = hasPinCode ? PIN_CODE_ENTER : PIN_CODE_CHOOSE;
+    const pinType = hasPinCode ? PIN_REMOVE : null;
     navigation.navigate('PINScreen', {
       status,
+      pinType,
     });
   };
 
