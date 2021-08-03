@@ -138,12 +138,12 @@ function CalendarScreen({navigation}) {
       <BottomSheet
         ref={sheetRef}
         index={0}
+        dismissOnPanDown={false}
         snapPoints={['40%', '80%']}>
         <PostList
           data={postListByGroup[selectedDate] || []}
           contentContainerStyle={{
             alignItems: 'center',
-            // justifyContent: 'center',
             flex: postListByGroup[selectedDate] ? 0 : 1,
           }}
           ListEmptyComponent={<Empty message={EMPTY_CONTENT} />}
