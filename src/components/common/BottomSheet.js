@@ -7,6 +7,9 @@ const BottomSheet = React.forwardRef((props, ref) => (
       ref={ref}
       index={props.index ?? 1}
       snapPoints={props.snapPoints}
+      style={{
+        elevation: 18,
+      }}
       {...props}>
       {props.children}
     </BottomSheetModal>

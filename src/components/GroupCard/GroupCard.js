@@ -48,6 +48,9 @@ const GroupCard = ({
     <GroupCardWrapper
       android_ripple={{color: 'lightgray'}}
       disabled={empty}
+      style={{
+        elevation: 1,
+      }}
       {...props}>
       <View>
         {icon && <Icon name={icon} size={35} color={Colors.fontColor} />}
